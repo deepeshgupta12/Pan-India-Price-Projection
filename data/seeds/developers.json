@@ -1,0 +1,32 @@
+[
+  {
+    "developer_code": "dlf",
+    "developer_name": "DLF",
+    "city_presence_count": 8,
+    "completed_projects_count": 40,
+    "under_construction_count": 12,
+    "avg_delivery_delay_months": 4,
+    "on_time_delivery_score": 8.7,
+    "brand_score": 9.3,
+    "quality_score": 9.0,
+    "litigation_risk_score": 3.2,
+    "consumer_sentiment_score": 8.2,
+    "premium_index_vs_market": 1.18,
+    "is_active": true
+  },
+  {
+    "developer_code": "sobha",
+    "developer_name": "Sobha",
+    "city_presence_count": 10,
+    "completed_projects_count": 55,
+    "under_construction_count": 14,
+    "avg_delivery_delay_months": 3,
+    "on_time_delivery_score": 9.0,
+    "brand_score": 9.1,
+    "quality_score": 9.4,
+    "litigation_risk_score": 2.8,
+    "consumer_sentiment_score": 8.6,
+    "premium_index_vs_market": 1.15,
+    "is_active": true
+  }
+]

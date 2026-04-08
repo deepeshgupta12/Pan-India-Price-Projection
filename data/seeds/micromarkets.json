@@ -1,0 +1,41 @@
+[
+  {
+    "micromarket_code": "gurgaon-dwarka-expressway",
+    "micromarket_name": "Dwarka Expressway",
+    "city_id": 1,
+    "market_type": "Growth Corridor",
+    "avg_price": 16500,
+    "avg_rent": 42000,
+    "inventory_overhang_months": 18,
+    "absorption_index": 8.4,
+    "future_supply_index": 7.9,
+    "infra_momentum_index": 9.2,
+    "is_active": true
+  },
+  {
+    "micromarket_code": "gurgaon-spr",
+    "micromarket_name": "Southern Peripheral Road",
+    "city_id": 1,
+    "market_type": "Emerging Premium Corridor",
+    "avg_price": 17500,
+    "avg_rent": 45000,
+    "inventory_overhang_months": 16,
+    "absorption_index": 8.1,
+    "future_supply_index": 7.4,
+    "infra_momentum_index": 8.8,
+    "is_active": true
+  },
+  {
+    "micromarket_code": "bangalore-east",
+    "micromarket_name": "East Bangalore",
+    "city_id": 4,
+    "market_type": "IT Demand Belt",
+    "avg_price": 13200,
+    "avg_rent": 36000,
+    "inventory_overhang_months": 15,
+    "absorption_index": 8.7,
+    "future_supply_index": 7.1,
+    "infra_momentum_index": 8.0,
+    "is_active": true
+  }
+]

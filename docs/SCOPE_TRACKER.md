@@ -796,3 +796,30 @@ Status: Pending
 - Frontend dictionary-driven forms
 - Charts and dashboards
 - Save/export flows
+
+---
+
+## Stepwise Delivery Progress
+
+### Completed
+- Step 0: Monorepo initialized
+- Step 1: FastAPI backend foundation with config and health route
+- Step 2: Next.js frontend foundation with dashboard shell and API health integration
+- Step 3: SQLAlchemy database foundation and seed-ready core models
+
+### In Progress
+- Step 4: Dictionary APIs and seed ingestion utilities
+
+### Pending
+- Seed ingestion command/service
+- Dictionary listing APIs
+- Project search API
+- Variable definition API
+- Infrastructure listing API
+- Scenario profile API
+- Pricing engine implementation
+- Projection engine implementation
+- Sensitivity engine implementation
+- Frontend input cards and glossary UI
+- Interactive charts
+- Save/export flows

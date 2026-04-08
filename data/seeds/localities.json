@@ -1,0 +1,41 @@
+[
+  {
+    "locality_code": "gurgaon-sector-113",
+    "locality_name": "Sector 113",
+    "city_id": 1,
+    "micromarket_id": 1,
+    "avg_price": 16800,
+    "avg_rent": 41500,
+    "search_demand_index": 8.2,
+    "livability_index": 6.9,
+    "social_infra_index": 6.7,
+    "connectivity_index": 8.8,
+    "is_active": true
+  },
+  {
+    "locality_code": "gurgaon-sector-71",
+    "locality_name": "Sector 71",
+    "city_id": 1,
+    "micromarket_id": 2,
+    "avg_price": 17650,
+    "avg_rent": 43800,
+    "search_demand_index": 7.9,
+    "livability_index": 7.4,
+    "social_infra_index": 7.1,
+    "connectivity_index": 8.2,
+    "is_active": true
+  },
+  {
+    "locality_code": "bangalore-whitefield",
+    "locality_name": "Whitefield",
+    "city_id": 4,
+    "micromarket_id": 3,
+    "avg_price": 13600,
+    "avg_rent": 37000,
+    "search_demand_index": 9.0,
+    "livability_index": 7.6,
+    "social_infra_index": 7.8,
+    "connectivity_index": 7.9,
+    "is_active": true
+  }
+]

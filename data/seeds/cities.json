@@ -1,0 +1,46 @@
+[
+  {
+    "city_code": "gurgaon",
+    "city_name": "Gurgaon",
+    "state_name": "Haryana",
+    "zone": "North",
+    "tier": "Tier 1",
+    "demand_index": 8.9,
+    "affordability_index": 6.8,
+    "macro_growth_index": 8.7,
+    "is_active": true
+  },
+  {
+    "city_code": "noida",
+    "city_name": "Noida",
+    "state_name": "Uttar Pradesh",
+    "zone": "North",
+    "tier": "Tier 1",
+    "demand_index": 8.4,
+    "affordability_index": 7.3,
+    "macro_growth_index": 8.1,
+    "is_active": true
+  },
+  {
+    "city_code": "mumbai",
+    "city_name": "Mumbai",
+    "state_name": "Maharashtra",
+    "zone": "West",
+    "tier": "Tier 1",
+    "demand_index": 9.2,
+    "affordability_index": 4.9,
+    "macro_growth_index": 8.8,
+    "is_active": true
+  },
+  {
+    "city_code": "bangalore",
+    "city_name": "Bangalore",
+    "state_name": "Karnataka",
+    "zone": "South",
+    "tier": "Tier 1",
+    "demand_index": 9.0,
+    "affordability_index": 6.9,
+    "macro_growth_index": 8.9,
+    "is_active": true
+  }
+]

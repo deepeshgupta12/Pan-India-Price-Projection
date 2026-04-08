@@ -1,0 +1,41 @@
+[
+  {
+    "scenario_code": "bear",
+    "scenario_name": "Bear",
+    "description": "Conservative outlook with weaker absorption, higher supply pressure, and lower infra realization.",
+    "market_cagr": 0.04,
+    "supply_stress_adjustment": -0.02,
+    "infra_realization_adjustment": -0.015,
+    "affordability_drag_adjustment": -0.015,
+    "developer_premium_drift": -0.005,
+    "risk_drag_adjustment": -0.01,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "scenario_code": "base",
+    "scenario_name": "Base",
+    "description": "Balanced outlook with expected absorption, moderate supply pressure, and realistic infra realization.",
+    "market_cagr": 0.08,
+    "supply_stress_adjustment": -0.01,
+    "infra_realization_adjustment": 0.01,
+    "affordability_drag_adjustment": -0.01,
+    "developer_premium_drift": 0.005,
+    "risk_drag_adjustment": -0.005,
+    "is_default": true,
+    "is_active": true
+  },
+  {
+    "scenario_code": "bull",
+    "scenario_name": "Bull",
+    "description": "Optimistic outlook with strong absorption, better infra realization, and premium retention.",
+    "market_cagr": 0.12,
+    "supply_stress_adjustment": -0.005,
+    "infra_realization_adjustment": 0.02,
+    "affordability_drag_adjustment": -0.005,
+    "developer_premium_drift": 0.01,
+    "risk_drag_adjustment": 0.0,
+    "is_default": false,
+    "is_active": true
+  }
+]
