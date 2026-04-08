@@ -1,6 +1,10 @@
 import { City } from "@/types/city";
 import { HealthResponse } from "@/types/health";
-import { PricingAnalysisRequest, PricingAnalysisResponse } from "@/types/pricing";
+import {
+  PricingAnalysisRequest,
+  PricingAnalysisResponse,
+  ProjectionAnalysisResponse,
+} from "@/types/pricing";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
 import { VariableDefinition } from "@/types/variable-definition";
@@ -103,6 +107,15 @@ export async function runCurrentFairPriceAnalysis(
 ): Promise<PricingAnalysisResponse | null> {
   return postToApi<PricingAnalysisRequest, PricingAnalysisResponse>(
     "/api/v1/pricing/current-fair-price",
+    payload,
+  );
+}
+
+export async function runProjectionSummaryAnalysis(
+  payload: PricingAnalysisRequest,
+): Promise<ProjectionAnalysisResponse | null> {
+  return postToApi<PricingAnalysisRequest, ProjectionAnalysisResponse>(
+    "/api/v1/pricing/projection-summary",
     payload,
   );
 }

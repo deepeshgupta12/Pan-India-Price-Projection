@@ -810,13 +810,13 @@ Status: Pending
 - Step 5: Frontend dictionary consumption and search-first input shell
 - Step 6: Editable analysis form state and project-prefill workflow
 - Step 7: Backend pricing API, Swagger verification, and frontend current fair price results
+- Step 8: Forward projection engine, scenario comparison, and visual output charts
 
 ### In Progress
-- Step 8: Forward projection engine and visual output layer
+- Step 9: Sensitivity layer and richer interpretability
 
 ### Pending
-- 1Y / 3Y / 5Y projection API
-- Scenario chart outputs
 - Sensitivity engine implementation
-- Interactive charts
 - Save/export flows
+- Additional explanation depth
+- Dashboard polish

@@ -6,6 +6,9 @@ from app.schemas.pricing import (
     PricingAnalysisInput,
     PricingAnalysisResponse,
     PricingFactorBreakdown,
+    ProjectionAnalysisResponse,
+    ProjectionPoint,
+    ScenarioProjectionSummary,
 )
 
 
@@ -41,6 +44,8 @@ class PricingComputation:
     premium_discount_vs_benchmark_pct: float
     confidence_score: float
     data_completeness_score: float
+    factors: list[PricingFactorBreakdown]
+    summary: str
 
 
 def _calculate_data_completeness(payload: PricingAnalysisInput) -> float:
@@ -76,9 +81,42 @@ def _scenario_adjustment_pct(scenario_code: str) -> float:
     return scenario_map.get(scenario_code.lower(), 0.0)
 
 
-def compute_current_fair_price(
-    payload: PricingAnalysisInput,
-) -> PricingAnalysisResponse:
+def _scenario_name(scenario_code: str) -> str:
+    scenario_map = {
+        "bear": "Bear",
+        "base": "Base",
+        "bull": "Bull",
+    }
+    return scenario_map.get(scenario_code.lower(), scenario_code.title())
+
+
+def _projection_growth_rate(payload: PricingAnalysisInput, scenario_code: str) -> float:
+    amenity_score = _to_float(payload.amenity_score, 0.0)
+    inventory_overhang_months = _to_float(payload.inventory_overhang_months, 0.0)
+    distance_to_metro_km = _to_float(payload.distance_to_metro_km, 0.0)
+    social_infra_score = _to_float(payload.social_infra_score, 0.0)
+
+    scenario_base_growth_map = {
+        "bear": 0.045,
+        "base": 0.085,
+        "bull": 0.125,
+    }
+    base_growth = scenario_base_growth_map.get(scenario_code.lower(), 0.085)
+
+    amenity_growth = max((amenity_score - 5.0) * 0.004, 0.0)
+    connectivity_growth = max((3.0 - distance_to_metro_km) * 0.003, 0.0)
+    infra_growth = max((social_infra_score - 5.0) * 0.003, 0.0)
+    supply_drag = max((inventory_overhang_months - 12.0) * 0.0025, 0.0)
+
+    growth_rate = _clamp(
+        base_growth + amenity_growth + connectivity_growth + infra_growth - supply_drag,
+        0.02,
+        0.18,
+    )
+    return round(growth_rate, 6)
+
+
+def _compute_base_pricing(payload: PricingAnalysisInput) -> PricingComputation:
     benchmark_price_psf = _to_float(payload.benchmark_current_asking_price, 0.0)
     if benchmark_price_psf <= 0:
         benchmark_price_psf = 1.0
@@ -174,11 +212,7 @@ def compute_current_fair_price(
         ),
     ]
 
-    direction_text = (
-        "premium"
-        if premium_discount_vs_benchmark_pct >= 0
-        else "discount"
-    )
+    direction_text = "premium" if premium_discount_vs_benchmark_pct >= 0 else "discount"
 
     summary = (
         f"The model estimates a current fair asking price of ₹{current_fair_price_psf:,.0f} "
@@ -187,10 +221,13 @@ def compute_current_fair_price(
         f"benchmark price."
     )
 
-    return PricingAnalysisResponse(
-        project_name=payload.project_name or "Selected Project",
-        scenario_code=payload.scenario_code,
+    return PricingComputation(
         benchmark_price_psf=round(benchmark_price_psf, 2),
+        specification_adjustment_pct=specification_adjustment_pct,
+        market_adjustment_pct=market_adjustment_pct,
+        connectivity_adjustment_pct=connectivity_adjustment_pct,
+        risk_adjustment_pct=risk_adjustment_pct,
+        total_adjustment_pct=total_adjustment_pct,
         current_fair_price_psf=current_fair_price_psf,
         lower_fair_price_psf=lower_fair_price_psf,
         upper_fair_price_psf=upper_fair_price_psf,
@@ -199,4 +236,110 @@ def compute_current_fair_price(
         data_completeness_score=data_completeness_score,
         factors=factors,
         summary=summary,
+    )
+
+
+def compute_current_fair_price(
+    payload: PricingAnalysisInput,
+) -> PricingAnalysisResponse:
+    base = _compute_base_pricing(payload)
+
+    return PricingAnalysisResponse(
+        project_name=payload.project_name or "Selected Project",
+        scenario_code=payload.scenario_code,
+        benchmark_price_psf=base.benchmark_price_psf,
+        current_fair_price_psf=base.current_fair_price_psf,
+        lower_fair_price_psf=base.lower_fair_price_psf,
+        upper_fair_price_psf=base.upper_fair_price_psf,
+        premium_discount_vs_benchmark_pct=base.premium_discount_vs_benchmark_pct,
+        confidence_score=base.confidence_score,
+        data_completeness_score=base.data_completeness_score,
+        factors=base.factors,
+        summary=base.summary,
+    )
+
+
+def compute_projection_analysis(
+    payload: PricingAnalysisInput,
+) -> ProjectionAnalysisResponse:
+    base = _compute_base_pricing(payload)
+
+    selected_growth_rate = _projection_growth_rate(payload, payload.scenario_code)
+
+    selected_points = [
+        ProjectionPoint(
+            label="Current",
+            year=0,
+            projected_price_psf=base.current_fair_price_psf,
+        ),
+        ProjectionPoint(
+            label="1Y",
+            year=1,
+            projected_price_psf=round(
+                base.current_fair_price_psf * ((1 + selected_growth_rate) ** 1),
+                2,
+            ),
+        ),
+        ProjectionPoint(
+            label="3Y",
+            year=3,
+            projected_price_psf=round(
+                base.current_fair_price_psf * ((1 + selected_growth_rate) ** 3),
+                2,
+            ),
+        ),
+        ProjectionPoint(
+            label="5Y",
+            year=5,
+            projected_price_psf=round(
+                base.current_fair_price_psf * ((1 + selected_growth_rate) ** 5),
+                2,
+            ),
+        ),
+    ]
+
+    scenario_summaries: list[ScenarioProjectionSummary] = []
+    for scenario_code in ["bear", "base", "bull"]:
+        growth_rate = _projection_growth_rate(payload, scenario_code)
+        scenario_summaries.append(
+            ScenarioProjectionSummary(
+                scenario_code=scenario_code,
+                scenario_name=_scenario_name(scenario_code),
+                projected_1y_price_psf=round(
+                    base.current_fair_price_psf * ((1 + growth_rate) ** 1),
+                    2,
+                ),
+                projected_3y_price_psf=round(
+                    base.current_fair_price_psf * ((1 + growth_rate) ** 3),
+                    2,
+                ),
+                projected_5y_price_psf=round(
+                    base.current_fair_price_psf * ((1 + growth_rate) ** 5),
+                    2,
+                ),
+                annualized_growth_pct=round(growth_rate * 100, 2),
+            )
+        )
+
+    selected_growth_summary = (
+        f"For the {_scenario_name(payload.scenario_code).lower()} scenario, the model "
+        f"estimates an annualized forward growth rate of {selected_growth_rate * 100:.2f}% "
+        f"from the current fair asking price baseline."
+    )
+
+    return ProjectionAnalysisResponse(
+        project_name=payload.project_name or "Selected Project",
+        scenario_code=payload.scenario_code,
+        benchmark_price_psf=base.benchmark_price_psf,
+        current_fair_price_psf=base.current_fair_price_psf,
+        lower_fair_price_psf=base.lower_fair_price_psf,
+        upper_fair_price_psf=base.upper_fair_price_psf,
+        premium_discount_vs_benchmark_pct=base.premium_discount_vs_benchmark_pct,
+        confidence_score=base.confidence_score,
+        data_completeness_score=base.data_completeness_score,
+        factors=base.factors,
+        summary=base.summary,
+        selected_scenario_projection_points=selected_points,
+        scenario_comparison=scenario_summaries,
+        selected_scenario_growth_summary=selected_growth_summary,
     )

@@ -27,9 +27,9 @@ export default async function HomePage() {
     <AppShell>
       <div className="space-y-10">
         <PageHeader
-          eyebrow="Step 7 · Pricing API + current fair price results"
+          eyebrow="Step 8 · Forward projection engine and visual output layer"
           title="PAN India real estate asking price projection workspace"
-          description="The workspace now supports the first real analysis loop: select a project, edit assumptions, run the backend pricing engine, and view current fair asking price output with factor-level explanation."
+          description="The workspace now supports current fair value analysis, 1Y / 3Y / 5Y projections, scenario comparison, and visual output charts. This step extends the pricing engine into forward-looking analysis."
           actions={
             <div className="flex flex-wrap gap-3">
               <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
@@ -43,7 +43,7 @@ export default async function HomePage() {
 
         <SectionCard
           title="Editable analysis workflow"
-          subtitle="Project selection, editable assumptions, scenario selection, and current fair price calculation now work together as the first full analysis loop."
+          subtitle="Project selection, editable assumptions, scenario selection, current fair price output, and forward projections now work together as a richer analysis loop."
         >
           <AnalysisWorkspace
             cities={cities}
@@ -72,24 +72,24 @@ export default async function HomePage() {
 
         <SectionCard
           title="What comes next"
-          subtitle="The next step will build on this baseline engine and introduce future projection windows and charted outputs."
+          subtitle="The next step will deepen interpretability and move toward sensitivity, save/export, and further output polish."
         >
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <InfoCard
-              title="1Y / 3Y / 5Y projections"
-              description="We will extend the backend engine from current fair price into forward-looking scenario projections."
+              title="Sensitivity engine"
+              description="We will show how changes in assumptions influence fair price and future projection outputs."
             />
             <InfoCard
-              title="Scenario-linked growth logic"
-              description="Bear, base, and bull profiles will start influencing projected price movement over time."
+              title="Deeper explanation"
+              description="We will expand pricing reasoning and confidence logic to make the model more interpretable."
             />
             <InfoCard
-              title="Charts"
-              description="We will introduce visual outputs for scenario comparison and projected price movement."
+              title="Save and export"
+              description="We will start introducing saveable analysis state and export-ready outputs."
             />
             <InfoCard
-              title="Richer explanation"
-              description="The pricing explanation layer will expand into more detailed factor interpretation and confidence framing."
+              title="Dashboard polish"
+              description="We will improve result discoverability, CTA states, and continuity across the workflow."
             />
           </div>
         </SectionCard>

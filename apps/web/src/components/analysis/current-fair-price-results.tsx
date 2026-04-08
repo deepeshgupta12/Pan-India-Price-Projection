@@ -1,9 +1,22 @@
-import { PricingAnalysisResponse } from "@/types/pricing";
+import {
+  PricingAnalysisResponse,
+  ProjectionAnalysisResponse,
+} from "@/types/pricing";
+import { ProjectionCharts } from "@/components/analysis/projection-charts";
 
 type CurrentFairPriceResultsProps = {
-  result: PricingAnalysisResponse | null;
+  result: ProjectionAnalysisResponse | PricingAnalysisResponse | null;
   isLoading: boolean;
 };
+
+function hasProjectionData(
+  result: ProjectionAnalysisResponse | PricingAnalysisResponse,
+): result is ProjectionAnalysisResponse {
+  return (
+    "selected_scenario_projection_points" in result &&
+    "scenario_comparison" in result
+  );
+}
 
 export function CurrentFairPriceResults({
   result,
@@ -13,10 +26,10 @@ export function CurrentFairPriceResults({
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="text-sm font-semibold text-slate-950">
-          Current fair price analysis
+          Analysis results
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Running pricing analysis...
+          Running pricing and projection analysis...
         </p>
       </div>
     );
@@ -26,11 +39,11 @@ export function CurrentFairPriceResults({
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="text-sm font-semibold text-slate-950">
-          Current fair price analysis
+          Analysis results
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Run the analysis to view the current fair asking price, pricing band,
-          benchmark delta, and factor explanation.
+          Run the analysis to view current fair asking price, fair value band,
+          factor contribution, and forward projection outputs.
         </p>
       </div>
     );
@@ -93,6 +106,72 @@ export function CurrentFairPriceResults({
           {result.summary}
         </div>
       </section>
+
+      {hasProjectionData(result) ? (
+        <>
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="border-b border-slate-100 pb-4">
+              <h2 className="text-xl font-semibold tracking-tight text-slate-950">
+                Forward projection summary
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                1Y, 3Y, and 5Y projections are derived from the current fair
+                price baseline and the selected scenario assumptions.
+              </p>
+            </div>
+
+            <div className="mt-5 grid gap-5 md:grid-cols-3">
+              {result.scenario_comparison
+                .filter(
+                  (scenario) =>
+                    scenario.scenario_code === result.scenario_code,
+                )
+                .map((scenario) => (
+                  <div
+                    key={scenario.scenario_code}
+                    className="contents"
+                  >
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        1Y projection
+                      </div>
+                      <div className="mt-2 text-xl font-semibold text-slate-950">
+                        ₹{scenario.projected_1y_price_psf.toLocaleString("en-IN")} / sq ft
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        3Y projection
+                      </div>
+                      <div className="mt-2 text-xl font-semibold text-slate-950">
+                        ₹{scenario.projected_3y_price_psf.toLocaleString("en-IN")} / sq ft
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        5Y projection
+                      </div>
+                      <div className="mt-2 text-xl font-semibold text-slate-950">
+                        ₹{scenario.projected_5y_price_psf.toLocaleString("en-IN")} / sq ft
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-6 text-slate-700">
+              {result.selected_scenario_growth_summary}
+            </div>
+          </section>
+
+          <ProjectionCharts
+            projectionPoints={result.selected_scenario_projection_points}
+            scenarioComparison={result.scenario_comparison}
+          />
+        </>
+      ) : null}
 
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="border-b border-slate-100 pb-4">

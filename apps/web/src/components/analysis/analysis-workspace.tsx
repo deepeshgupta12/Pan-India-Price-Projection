@@ -7,7 +7,7 @@ import {
   buildAnalysisFormValuesFromProject,
   buildInitialAnalysisFormValues,
 } from "@/lib/analysis-form";
-import { runCurrentFairPriceAnalysis } from "@/lib/api";
+import { runProjectionSummaryAnalysis } from "@/lib/api";
 import { AnalysisGroupCard } from "@/components/analysis/analysis-group-card";
 import { CurrentFairPriceResults } from "@/components/analysis/current-fair-price-results";
 import { ScenarioSelector } from "@/components/analysis/scenario-selector";
@@ -15,7 +15,7 @@ import { ProjectSearchPanel } from "@/components/search/project-search-panel";
 import { StatPill } from "@/components/ui/stat-pill";
 import { City } from "@/types/city";
 import { AnalysisFormValues } from "@/types/analysis-form";
-import { PricingAnalysisResponse } from "@/types/pricing";
+import { ProjectionAnalysisResponse } from "@/types/pricing";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
 
@@ -43,9 +43,9 @@ export function AnalysisWorkspace({
   const [projectOverrides, setProjectOverrides] = useState<
     Record<number, AnalysisFormValues>
   >({});
-  const [pricingResult, setPricingResult] =
-    useState<PricingAnalysisResponse | null>(null);
-  const [isPricingLoading, setIsPricingLoading] = useState(false);
+  const [analysisResult, setAnalysisResult] =
+    useState<ProjectionAnalysisResponse | null>(null);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   const selectedProject =
     projects.find((project) => project.id === selectedProjectId) ?? null;
@@ -90,22 +90,24 @@ export function AnalysisWorkspace({
         },
       };
     });
+
+    setAnalysisResult(null);
   }
 
   async function handleRunAnalysis(): Promise<void> {
-    if (!selectedProject) {
+    if (!selectedProject || isAnalysisLoading) {
       return;
     }
 
-    setIsPricingLoading(true);
+    setIsAnalysisLoading(true);
 
-    const result = await runCurrentFairPriceAnalysis({
+    const result = await runProjectionSummaryAnalysis({
       ...formValues,
       scenario_code: selectedScenarioCode,
     });
 
-    setPricingResult(result);
-    setIsPricingLoading(false);
+    setAnalysisResult(result);
+    setIsAnalysisLoading(false);
   }
 
   return (
@@ -116,7 +118,7 @@ export function AnalysisWorkspace({
         selectedProjectId={selectedProjectId}
         onSelectProject={(projectId) => {
           setSelectedProjectId(projectId);
-          setPricingResult(null);
+          setAnalysisResult(null);
         }}
       />
 
@@ -127,8 +129,13 @@ export function AnalysisWorkspace({
             selectedScenarioCode={selectedScenarioCode}
             onChange={(scenarioCode) => {
               setSelectedScenarioCode(scenarioCode);
-              setPricingResult(null);
+              setAnalysisResult(null);
             }}
+          />
+
+          <CurrentFairPriceResults
+            result={analysisResult}
+            isLoading={isAnalysisLoading}
           />
 
           {analysisInputGroups.map((group) => (
@@ -143,7 +150,7 @@ export function AnalysisWorkspace({
           ))}
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start">
           <div className="rounded-3xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
               Analysis state
@@ -183,18 +190,45 @@ export function AnalysisWorkspace({
                 />
               </div>
 
+              {analysisResult ? (
+                <div className="grid gap-3">
+                  <div className="rounded-2xl bg-white/10 p-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">
+                      Latest fair price
+                    </div>
+                    <div className="mt-2 text-lg font-semibold text-white">
+                      ₹{analysisResult.current_fair_price_psf.toLocaleString("en-IN")} / sq ft
+                    </div>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">
+                      5Y selected scenario projection
+                    </div>
+                    <div className="mt-2 text-lg font-semibold text-white">
+                      ₹
+                      {analysisResult.selected_scenario_projection_points
+                        .find((point) => point.year === 5)
+                        ?.projected_price_psf.toLocaleString("en-IN") ?? "N/A"}{" "}
+                      / sq ft
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
               <button
                 type="button"
                 onClick={handleRunAnalysis}
-                className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-slate-100"
+                disabled={isAnalysisLoading || !selectedProject}
+                className="w-full rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Run current fair price analysis
+                {isAnalysisLoading
+                  ? "Running analysis..."
+                  : "Run fair price and projection analysis"}
               </button>
 
               <div className="rounded-2xl bg-white/10 p-4 text-sm leading-6 text-slate-200">
-                This panel now allows the first real pricing run. The output will
-                appear below as current fair asking price cards and factor
-                explanation.
+                The analysis engine now returns current fair price, 1Y / 3Y / 5Y
+                projections, and scenario comparison outputs with charts.
               </div>
             </div>
           </div>
@@ -212,11 +246,6 @@ export function AnalysisWorkspace({
           </div>
         </aside>
       </div>
-
-      <CurrentFairPriceResults
-        result={pricingResult}
-        isLoading={isPricingLoading}
-      />
     </div>
   );
 }

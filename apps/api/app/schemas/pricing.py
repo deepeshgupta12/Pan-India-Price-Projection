@@ -38,6 +38,21 @@ class PricingFactorBreakdown(BaseModel):
     explanation: str
 
 
+class ProjectionPoint(BaseModel):
+    label: str
+    year: int
+    projected_price_psf: float
+
+
+class ScenarioProjectionSummary(BaseModel):
+    scenario_code: str
+    scenario_name: str
+    projected_1y_price_psf: float
+    projected_3y_price_psf: float
+    projected_5y_price_psf: float
+    annualized_growth_pct: float
+
+
 class PricingAnalysisResponse(BaseModel):
     project_name: str
     scenario_code: str
@@ -50,3 +65,20 @@ class PricingAnalysisResponse(BaseModel):
     data_completeness_score: float
     factors: list[PricingFactorBreakdown]
     summary: str
+
+
+class ProjectionAnalysisResponse(BaseModel):
+    project_name: str
+    scenario_code: str
+    benchmark_price_psf: float
+    current_fair_price_psf: float
+    lower_fair_price_psf: float
+    upper_fair_price_psf: float
+    premium_discount_vs_benchmark_pct: float
+    confidence_score: float
+    data_completeness_score: float
+    factors: list[PricingFactorBreakdown]
+    summary: str
+    selected_scenario_projection_points: list[ProjectionPoint]
+    scenario_comparison: list[ScenarioProjectionSummary]
+    selected_scenario_growth_summary: str
