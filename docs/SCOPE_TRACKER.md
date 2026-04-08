@@ -808,15 +808,14 @@ Status: Pending
 - Step 3: SQLAlchemy database foundation and seed-ready core models
 - Step 4: Seed ingestion and dictionary APIs
 - Step 5: Frontend dictionary consumption and search-first input shell
-
-### In Progress
 - Step 6: Editable analysis form state and project-prefill workflow
 
+### In Progress
+- Step 7: Backend pricing engine and current fair price API
+
 ### Pending
-- Editable dictionary-driven form fields
-- Scenario state management
-- Pricing engine implementation
-- Projection engine implementation
+- Current fair price calculation API
+- Scenario-influenced projection API
 - Sensitivity engine implementation
 - Interactive charts
 - Save/export flows

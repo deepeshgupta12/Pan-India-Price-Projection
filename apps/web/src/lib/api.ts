@@ -1,6 +1,7 @@
 import { City } from "@/types/city";
 import { HealthResponse } from "@/types/health";
 import { Project } from "@/types/project";
+import { ScenarioProfile } from "@/types/scenario-profile";
 import { VariableDefinition } from "@/types/variable-definition";
 
 const API_BASE_URL =
@@ -48,14 +49,11 @@ export async function fetchProjects(params?: {
 
   searchParams.set("limit", String(params?.limit ?? 50));
 
-  const suffix = searchParams.toString()
-    ? `?${searchParams.toString()}`
-    : "";
+  const suffix = searchParams.toString() ? `?${searchParams.toString()}` : "";
 
   return (
-    (await fetchFromApi<Project[]>(
-      `/api/v1/dictionaries/projects${suffix}`,
-    )) ?? []
+    (await fetchFromApi<Project[]>(`/api/v1/dictionaries/projects${suffix}`)) ??
+    []
   );
 }
 
@@ -63,6 +61,14 @@ export async function fetchVariableDefinitions(): Promise<VariableDefinition[]> 
   return (
     (await fetchFromApi<VariableDefinition[]>(
       "/api/v1/dictionaries/variable-definitions",
+    )) ?? []
+  );
+}
+
+export async function fetchScenarioProfiles(): Promise<ScenarioProfile[]> {
+  return (
+    (await fetchFromApi<ScenarioProfile[]>(
+      "/api/v1/dictionaries/scenario-profiles",
     )) ?? []
   );
 }

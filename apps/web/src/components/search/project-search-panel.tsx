@@ -9,17 +9,18 @@ import { ProjectCard } from "@/components/search/project-card";
 type ProjectSearchPanelProps = {
   cities: City[];
   projects: Project[];
+  selectedProjectId: number | null;
+  onSelectProject: (projectId: number) => void;
 };
 
 export function ProjectSearchPanel({
   cities,
   projects,
+  selectedProjectId,
+  onSelectProject,
 }: ProjectSearchPanelProps) {
   const [selectedCityId, setSelectedCityId] = useState<number | "all">("all");
   const [query, setQuery] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
-    projects[0]?.id ?? null,
-  );
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -38,7 +39,7 @@ export function ProjectSearchPanel({
 
   const selectedProject =
     filteredProjects.find((project) => project.id === selectedProjectId) ??
-    filteredProjects[0] ??
+    projects.find((project) => project.id === selectedProjectId) ??
     null;
 
   return (
@@ -94,7 +95,7 @@ export function ProjectSearchPanel({
               <button
                 key={project.id}
                 type="button"
-                onClick={() => setSelectedProjectId(project.id)}
+                onClick={() => onSelectProject(project.id)}
                 className="block w-full text-left"
               >
                 <ProjectCard
@@ -170,9 +171,9 @@ export function ProjectSearchPanel({
               </div>
 
               <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm leading-6 text-slate-600">
-                This selected project panel will later drive prefill, editable
-                assumptions, comparable-project logic, infrastructure overlays,
-                and scenario analysis.
+                Selecting a project now prefills the editable analysis form
+                below. This will become the base for pricing and projection
+                logic in the next steps.
               </div>
             </div>
           ) : (
