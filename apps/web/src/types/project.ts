@@ -26,6 +26,10 @@ export type Project = {
   rera_status: string | null;
   benchmark_current_asking_price: number | null;
   benchmark_radius_km: number | null;
+  avg_rent: number | null;
+  inventory_overhang_months: number | null;
+  distance_to_metro_km: number | null;
+  social_infra_score: number | null;
   source: string | null;
   last_data_refreshed_at: string | null;
   is_active: boolean;

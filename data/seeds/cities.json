@@ -42,5 +42,60 @@
     "affordability_index": 6.9,
     "macro_growth_index": 8.9,
     "is_active": true
+  },
+  {
+    "city_code": "hyderabad",
+    "city_name": "Hyderabad",
+    "state_name": "Telangana",
+    "zone": "South",
+    "tier": "Tier 1",
+    "demand_index": 8.7,
+    "affordability_index": 7.2,
+    "macro_growth_index": 8.6,
+    "is_active": true
+  },
+  {
+    "city_code": "pune",
+    "city_name": "Pune",
+    "state_name": "Maharashtra",
+    "zone": "West",
+    "tier": "Tier 1",
+    "demand_index": 8.5,
+    "affordability_index": 7.5,
+    "macro_growth_index": 8.3,
+    "is_active": true
+  },
+  {
+    "city_code": "chennai",
+    "city_name": "Chennai",
+    "state_name": "Tamil Nadu",
+    "zone": "South",
+    "tier": "Tier 1",
+    "demand_index": 7.9,
+    "affordability_index": 7.8,
+    "macro_growth_index": 7.7,
+    "is_active": true
+  },
+  {
+    "city_code": "kolkata",
+    "city_name": "Kolkata",
+    "state_name": "West Bengal",
+    "zone": "East",
+    "tier": "Tier 1",
+    "demand_index": 7.4,
+    "affordability_index": 8.3,
+    "macro_growth_index": 7.2,
+    "is_active": true
+  },
+  {
+    "city_code": "ahmedabad",
+    "city_name": "Ahmedabad",
+    "state_name": "Gujarat",
+    "zone": "West",
+    "tier": "Tier 1",
+    "demand_index": 7.8,
+    "affordability_index": 8.5,
+    "macro_growth_index": 7.9,
+    "is_active": true
   }
 ]

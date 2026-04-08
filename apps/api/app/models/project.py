@@ -68,6 +68,12 @@ class Project(Base):
     )
     benchmark_radius_km: Mapped[float | None] = mapped_column(Float, nullable=True)
 
+    # Market-context fields (added in gap-fix pass)
+    avg_rent: Mapped[float | None] = mapped_column(Float, nullable=True)
+    inventory_overhang_months: Mapped[float | None] = mapped_column(Float, nullable=True)
+    distance_to_metro_km: Mapped[float | None] = mapped_column(Float, nullable=True)
+    social_infra_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+
     source: Mapped[str | None] = mapped_column(String(255), nullable=True)
     last_data_refreshed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True

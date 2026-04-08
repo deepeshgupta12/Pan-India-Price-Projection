@@ -37,5 +37,18 @@
     "risk_drag_adjustment": 0.0,
     "is_default": false,
     "is_active": true
+  },
+  {
+    "scenario_code": "custom",
+    "scenario_name": "Custom",
+    "description": "User-defined scenario. All growth and adjustment values are supplied directly via the analysis input payload.",
+    "market_cagr": 0.08,
+    "supply_stress_adjustment": -0.01,
+    "infra_realization_adjustment": 0.01,
+    "affordability_drag_adjustment": -0.01,
+    "developer_premium_drift": 0.005,
+    "risk_drag_adjustment": -0.005,
+    "is_default": false,
+    "is_active": true
   }
 ]

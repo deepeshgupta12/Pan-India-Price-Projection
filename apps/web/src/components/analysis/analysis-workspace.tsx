@@ -355,6 +355,42 @@ export function AnalysisWorkspace({ cities, projects, scenarios }: AnalysisWorks
             </div>
           ) : null}
 
+          {/* ── Data quality warning ─────────────────────────────────── */}
+          {resultToDisplay &&
+            resultToDisplay.data_completeness_score < 60 ? (
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+              <span className="mt-0.5 flex-shrink-0 text-amber-500">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 16 16"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 2L1.5 13.5h13L8 2zm0 4v4m0 2v1"
+                  />
+                </svg>
+              </span>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-700">
+                  Low data quality
+                </div>
+                <p className="mt-1 text-sm leading-6 text-amber-800">
+                  Only{" "}
+                  <strong className="font-semibold">
+                    {resultToDisplay.data_completeness_score.toFixed(0)}%
+                  </strong>{" "}
+                  of input fields are populated. Fill in more fields — especially
+                  developer profile, supply-demand, and macro inputs — to improve
+                  confidence and output accuracy.
+                </p>
+              </div>
+            </div>
+          ) : null}
+
           {/* Results (current run OR reopened saved analysis) */}
           <CurrentFairPriceResults
             result={resultToDisplay}

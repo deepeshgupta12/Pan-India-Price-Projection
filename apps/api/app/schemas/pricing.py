@@ -2,16 +2,19 @@ from pydantic import BaseModel, Field
 
 
 class PricingAnalysisInput(BaseModel):
+    # ── Project basics ────────────────────────────────────────────────────────
     project_name: str = Field(default="")
     city_id: int | None = Field(default=None)
     micromarket_id: int | None = Field(default=None)
     locality_id: int | None = Field(default=None)
     project_stage: str = Field(default="")
+    rera_status: str = Field(default="Registered")
     launch_date: str = Field(default="")
     expected_possession_date: str = Field(default="")
-
-    total_land_acres: str = Field(default="")
     total_units: str = Field(default="")
+
+    # ── Product configuration ─────────────────────────────────────────────────
+    total_land_acres: str = Field(default="")
     towers_count: str = Field(default="")
     floors_count: str = Field(default="")
     avg_unit_size_sqft: str = Field(default="")
@@ -22,14 +25,47 @@ class PricingAnalysisInput(BaseModel):
     construction_quality_score: str = Field(default="")
     legal_clarity_score: str = Field(default="")
 
+    # ── Market benchmark context ──────────────────────────────────────────────
     benchmark_current_asking_price: str = Field(default="")
     benchmark_radius_km: str = Field(default="")
+    comparable_sold_psf: str = Field(default="")
     avg_rent: str = Field(default="")
+
+    # ── Supply and demand ─────────────────────────────────────────────────────
     inventory_overhang_months: str = Field(default="")
+    absorption_rate_pct: str = Field(default="")
+    new_supply_upcoming_units: str = Field(default="")
+
+    # ── Developer profile ─────────────────────────────────────────────────────
+    developer_brand_score: str = Field(default="")
+    developer_on_time_score: str = Field(default="")
+    developer_litigation_score: str = Field(default="")
+
+    # ── Macro inputs ──────────────────────────────────────────────────────────
+    repo_rate_pct: str = Field(default="")
+    inflation_rate_pct: str = Field(default="")
+    gdp_growth_pct: str = Field(default="")
+
+    # ── Connectivity ──────────────────────────────────────────────────────────
     distance_to_metro_km: str = Field(default="")
+    distance_to_airport_km: str = Field(default="")
+    distance_to_cbd_km: str = Field(default="")
     social_infra_score: str = Field(default="")
 
+    # ── Infrastructure uplift ─────────────────────────────────────────────────
+    infra_uplift_pct: str = Field(default="")
+
+    # ── Scenario ──────────────────────────────────────────────────────────────
     scenario_code: str = Field(default="base")
+    custom_growth_rate_pct: str = Field(default="")
+
+    # ── Passed-through ScenarioProfile values (injected by route from DB) ─────
+    scenario_market_cagr: float | None = Field(default=None)
+    scenario_supply_stress_adjustment: float | None = Field(default=None)
+    scenario_infra_realization_adjustment: float | None = Field(default=None)
+    scenario_affordability_drag_adjustment: float | None = Field(default=None)
+    scenario_developer_premium_drift: float | None = Field(default=None)
+    scenario_risk_drag_adjustment: float | None = Field(default=None)
 
 
 class PricingFactorBreakdown(BaseModel):
@@ -104,6 +140,11 @@ class ProjectionAnalysisResponse(BaseModel):
     confidence_explanation: ConfidenceExplanation
     sensitivity_scenarios: list[SensitivityScenario]
     top_sensitivity_driver: str
+
+
+class StandaloneSensitivityRequest(BaseModel):
+    """Request body for the standalone /pricing/sensitivity endpoint."""
+    input: PricingAnalysisInput
 
 
 class SaveAnalysisRequest(BaseModel):

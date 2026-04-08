@@ -853,8 +853,70 @@ Status: Pending
 - `page.tsx`: updated eyebrow to "Step 11 complete", cleaner description, removed
   "What comes next" section
 
+---
+
+## Step 12 — Gap Resolution Pass (2026-04)
+
+### Delivered
+
+#### Step 12.1 — Seed Data Quality
+- `cities.json` expanded from 4 → 9 cities (added Hyderabad, Pune, Chennai, Kolkata,
+  Ahmedabad)
+- `micromarkets.json` expanded from 3 → 15 micromarkets covering all 9 cities
+- `localities.json` expanded from 3 → 15 localities, all linked to correct cities and
+  micromarkets
+- `developers.json` expanded from 2 → 10 developers (added Godrej Properties, Prestige
+  Group, Brigade Group, Mahindra Lifespaces, Lodha Group, Tata Housing, Puravankara,
+  Independent/Unknown)
+- `projects.json` expanded from 2 → 12 projects across 9 cities and all 10 developers
+- `variable_definitions.json` expanded from 3 → 30 variable definitions covering all
+  input families
+- `infrastructure_records.json` expanded from 2 → 12 records covering all 9 cities
+- `scenario_profiles.json` — added "custom" scenario entry
+
+#### Step 12.2 — Data Model Fixes
+- `apps/api/app/models/project.py` — added 4 missing nullable Float columns:
+  `avg_rent`, `inventory_overhang_months`, `distance_to_metro_km`, `social_infra_score`
+- `apps/web/src/types/project.ts` — Project TypeScript type updated with all 4 new fields
+- `apps/api/pan_india_price_projection.db` — deleted so fresh seed runs on next startup
+
+#### Step 12.3 — Schema Expansion
+- `apps/api/app/schemas/pricing.py` → `PricingAnalysisInput` expanded from 25 → 45 fields
+- Added `StandaloneSensitivityRequest` schema
+
+#### Step 12.4 — Pricing Engine Rewrite (data-driven)
+- 6-factor pricing formula: specification, market+supply-demand, connectivity+infra,
+  developer premium, macro+risk, stage+regulatory
+- 5-driver confidence score model
+- Zero hardcoded scenario tables — reads from DB-injected ScenarioProfile values
+- Sensitivity analysis expanded to 6 variables
+
+#### Step 12.5 — Route and API Fixes
+- All pricing endpoints inject ScenarioProfile from DB via `_inject_scenario_profile()`
+- New `POST /pricing/sensitivity` standalone endpoint
+- New `GET /seed-status` endpoint in health router
+
+#### Step 12.6 — Frontend Form Expansion (4 → 8 groups, 23 → 44 fields)
+- All input families added: supply-demand, developer profile, macro, infrastructure,
+  scenario adjustments
+- Select inputs for project stage, RERA status, scenario code
+- Sensible macro defaults pre-populated
+- All new project fields prefilled from DB via `buildAnalysisFormValuesFromProject()`
+
+#### Step 12.7 — Frontend UX Gaps
+- Data quality warning banner: shown when `data_completeness_score < 60%`
+- `editable-field-card.tsx` full validation rewrite: select support, min/max, required
+  indicators, error messages, focus ring, error state styling
+- `projection-charts.tsx` rewrite: empty states, monochrome Recharts styling, ₹Nk
+  Y-axis formatter, rounded bars, unified section card
+
+#### Step 12.8 — Test Coverage
+- 49 unit tests in `apps/api/tests/test_pricing_engine.py`, all passing
+- Tests cover: `_to_float`, `_clamp`, data completeness, confidence score, scenario
+  CAGR, projection growth rate, every pricing factor direction, full API functions
+
 ### In Progress
 - None
 
 ### Pending
-- None — V1 scope fully delivered
+- None — V1 scope fully delivered with all gap fixes applied
