@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   analysisInputGroups,
   buildAnalysisFormValuesFromProject,
   buildInitialAnalysisFormValues,
 } from "@/lib/analysis-form";
+import { AnalysisGroupCard } from "@/components/analysis/analysis-group-card";
+import { ScenarioSelector } from "@/components/analysis/scenario-selector";
+import { ProjectSearchPanel } from "@/components/search/project-search-panel";
+import { StatPill } from "@/components/ui/stat-pill";
 import { City } from "@/types/city";
 import { AnalysisFormValues } from "@/types/analysis-form";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
-import { ProjectSearchPanel } from "@/components/search/project-search-panel";
-import { ScenarioSelector } from "@/components/analysis/scenario-selector";
-import { AnalysisGroupCard } from "@/components/analysis/analysis-group-card";
-import { StatPill } from "@/components/ui/stat-pill";
 
 type AnalysisWorkspaceProps = {
   cities: City[];
@@ -37,18 +37,12 @@ export function AnalysisWorkspace({
   );
   const [selectedScenarioCode, setSelectedScenarioCode] =
     useState<string>(defaultScenarioCode);
-  const [formValues, setFormValues] = useState<AnalysisFormValues>(
-    buildInitialAnalysisFormValues(),
-  );
+  const [projectOverrides, setProjectOverrides] = useState<
+    Record<number, AnalysisFormValues>
+  >({});
 
   const selectedProject =
     projects.find((project) => project.id === selectedProjectId) ?? null;
-
-  useEffect(() => {
-    if (selectedProject) {
-      setFormValues(buildAnalysisFormValuesFromProject(selectedProject));
-    }
-  }, [selectedProject]);
 
   const selectedScenario = useMemo(
     () =>
@@ -58,14 +52,38 @@ export function AnalysisWorkspace({
     [scenarios, selectedScenarioCode],
   );
 
+  const formValues = useMemo<AnalysisFormValues>(() => {
+    if (!selectedProject) {
+      return buildInitialAnalysisFormValues();
+    }
+
+    return (
+      projectOverrides[selectedProject.id] ??
+      buildAnalysisFormValuesFromProject(selectedProject)
+    );
+  }, [projectOverrides, selectedProject]);
+
   function handleFieldChange(
     key: keyof AnalysisFormValues,
     value: string,
   ): void {
-    setFormValues((previous) => ({
-      ...previous,
-      [key]: value,
-    }));
+    if (!selectedProject) {
+      return;
+    }
+
+    setProjectOverrides((previous) => {
+      const baseValues =
+        previous[selectedProject.id] ??
+        buildAnalysisFormValuesFromProject(selectedProject);
+
+      return {
+        ...previous,
+        [selectedProject.id]: {
+          ...baseValues,
+          [key]: value,
+        },
+      };
+    });
   }
 
   return (
@@ -150,9 +168,10 @@ export function AnalysisWorkspace({
               Prefill logic
             </div>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              When a project is selected, the analysis form is automatically
-              initialized from that project’s dictionary record. The user can
-              then edit assumptions before calculations are introduced.
+              When a project is selected, the analysis form is initialized from
+              that project’s dictionary record. Any field edits are stored as
+              project-specific overrides, so changing projects does not rely on a
+              synchronous effect-driven reset.
             </p>
           </div>
         </aside>
