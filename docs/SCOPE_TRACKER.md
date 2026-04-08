@@ -781,18 +781,18 @@ Status: Pending
 
 ### Completed
 - Step 0: Monorepo initialized
-- Git initialized and pushed to GitHub
-- Root project files created
-- Scope tracker created and committed
+- Step 1: FastAPI backend foundation with config and health route
+- Step 2: Next.js frontend foundation with app shell and API health integration
 
 ### In Progress
-- Step 1: Backend foundation setup
+- Step 3: Database foundation and seed-ready backend models
 
 ### Pending
-- Backend database layer
+- SQLAlchemy setup
 - Seed dictionaries
+- Project dictionary APIs
+- Variable dictionary APIs
 - Analysis engine
-- Frontend initialization
-- UI input glossary rendering
-- Output dashboard
+- Frontend dictionary-driven forms
+- Charts and dashboards
 - Save/export flows
