@@ -27,9 +27,9 @@ export default async function HomePage() {
     <AppShell>
       <div className="space-y-10">
         <PageHeader
-          eyebrow="Step 9 · Sensitivity layer and richer interpretability"
+          eyebrow="Step 10 · Save/export flows and broader dashboard polish"
           title="PAN India real estate asking price projection workspace"
-          description="The workspace now adds sensitivity scenarios, richer narrative interpretation, risk flags, confidence framing, and improved chart readability on top of the forward projection engine."
+          description="The workspace now supports saveable analysis runs, JSON and CSV exports, improved right-rail continuity, and saved analysis visibility alongside pricing, projections, and sensitivity outputs."
           actions={
             <div className="flex flex-wrap gap-3">
               <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
@@ -43,7 +43,7 @@ export default async function HomePage() {
 
         <SectionCard
           title="Editable analysis workflow"
-          subtitle="Project selection, editable assumptions, fair price output, forward projections, and sensitivity interpretation now work together as a richer decision-support experience."
+          subtitle="Project selection, editable assumptions, pricing outputs, forward projections, sensitivity interpretation, and save/export actions now work together as a fuller decision-support experience."
         >
           <AnalysisWorkspace
             cities={cities}
@@ -72,24 +72,24 @@ export default async function HomePage() {
 
         <SectionCard
           title="What comes next"
-          subtitle="The next step will move into save/export flows and broader output polish."
+          subtitle="The next step can extend this product into deeper persistence, comparison workflows, and event instrumentation."
         >
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <InfoCard
-              title="Save analysis"
-              description="We will begin persisting analysis state so users can revisit project runs."
+              title="Saved analysis detail views"
+              description="We can add richer revisit flows where saved analyses reopen directly into the workspace."
             />
             <InfoCard
-              title="Export flows"
-              description="We will start introducing export-ready analysis outputs and downloadable artifacts."
+              title="Compare saved runs"
+              description="We can support comparison of the same project across scenarios and assumption sets."
             />
             <InfoCard
-              title="Workflow polish"
-              description="We will improve chart readability, output continuity, and interaction quality across the page."
+              title="Analytics instrumentation"
+              description="We can begin wiring tracked events for analysis runs, saves, exports, and scenario changes."
             />
             <InfoCard
-              title="Interpretation depth"
-              description="We will continue sharpening narrative explanation so the model is easier to trust and act on."
+              title="Output polish"
+              description="We can further refine dashboard hierarchy, saved-state continuity, and richer export packaging."
             />
           </div>
         </SectionCard>

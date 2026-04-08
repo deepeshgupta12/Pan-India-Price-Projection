@@ -29,7 +29,8 @@ export function CurrentFairPriceResults({
           Analysis results
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Running pricing, projection, and sensitivity analysis...
+          Running pricing, projection, sensitivity, and save/export-ready
+          analysis...
         </p>
       </div>
     );
@@ -123,20 +124,17 @@ export function CurrentFairPriceResults({
             <div className="mt-5 grid gap-5 md:grid-cols-3">
               {result.scenario_comparison
                 .filter(
-                  (scenario) =>
-                    scenario.scenario_code === result.scenario_code,
+                  (scenario) => scenario.scenario_code === result.scenario_code,
                 )
                 .map((scenario) => (
-                  <div
-                    key={scenario.scenario_code}
-                    className="contents"
-                  >
+                  <div key={scenario.scenario_code} className="contents">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                       <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                         1Y projection
                       </div>
                       <div className="mt-2 text-xl font-semibold text-slate-950">
-                        ₹{scenario.projected_1y_price_psf.toLocaleString("en-IN")} / sq ft
+                        ₹{scenario.projected_1y_price_psf.toLocaleString("en-IN")} / sq
+                        ft
                       </div>
                     </div>
 
@@ -145,7 +143,8 @@ export function CurrentFairPriceResults({
                         3Y projection
                       </div>
                       <div className="mt-2 text-xl font-semibold text-slate-950">
-                        ₹{scenario.projected_3y_price_psf.toLocaleString("en-IN")} / sq ft
+                        ₹{scenario.projected_3y_price_psf.toLocaleString("en-IN")} / sq
+                        ft
                       </div>
                     </div>
 
@@ -154,7 +153,8 @@ export function CurrentFairPriceResults({
                         5Y projection
                       </div>
                       <div className="mt-2 text-xl font-semibold text-slate-950">
-                        ₹{scenario.projected_5y_price_psf.toLocaleString("en-IN")} / sq ft
+                        ₹{scenario.projected_5y_price_psf.toLocaleString("en-IN")} / sq
+                        ft
                       </div>
                     </div>
                   </div>
@@ -228,7 +228,8 @@ export function CurrentFairPriceResults({
             </div>
 
             <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-6 text-slate-700">
-              Top sensitivity driver: <span className="font-semibold">{result.top_sensitivity_driver}</span>
+              Top sensitivity driver:{" "}
+              <span className="font-semibold">{result.top_sensitivity_driver}</span>
             </div>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">

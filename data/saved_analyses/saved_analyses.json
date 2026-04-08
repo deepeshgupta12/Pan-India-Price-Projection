@@ -1,0 +1,148 @@
+[
+  {
+    "analysis_id": "8c385d78-e016-4580-8806-106a9e94696e",
+    "analysis_name": "Sample Gurgaon Launch One · BULL · 8/4/2026, 4:19:08 pm",
+    "project_name": "Sample Gurgaon Launch One",
+    "scenario_code": "bull",
+    "created_at": "2026-04-08T10:49:08.204013+00:00",
+    "updated_at": "2026-04-08T10:49:08.204013+00:00",
+    "result": {
+      "project_name": "Sample Gurgaon Launch One",
+      "scenario_code": "bull",
+      "benchmark_price_psf": 18250.0,
+      "current_fair_price_psf": 21206.5,
+      "lower_fair_price_psf": 20146.17,
+      "upper_fair_price_psf": 22266.83,
+      "premium_discount_vs_benchmark_pct": 16.2,
+      "confidence_score": 81.76,
+      "data_completeness_score": 76.47,
+      "factors": [
+        {
+          "factor_name": "Specification adjustment",
+          "value": 14.7,
+          "explanation": "Derived from amenity score, construction quality, legal clarity, open space, parking ratio, and density."
+        },
+        {
+          "factor_name": "Market adjustment",
+          "value": 0.0,
+          "explanation": "Derived from rent benchmark, inventory overhang, and benchmark radius."
+        },
+        {
+          "factor_name": "Connectivity adjustment",
+          "value": -1.0,
+          "explanation": "Derived from metro accessibility and social infrastructure strength."
+        },
+        {
+          "factor_name": "Scenario adjustment",
+          "value": 2.5,
+          "explanation": "Derived from the selected scenario profile to reflect current stance."
+        }
+      ],
+      "summary": "The model estimates a current fair asking price of ₹21,206 per sq ft for Sample Gurgaon Launch One, implying a 16.2% premium versus the provided benchmark price.",
+      "selected_scenario_projection_points": [
+        {
+          "label": "Current",
+          "year": 0,
+          "projected_price_psf": 21206.5
+        },
+        {
+          "label": "1Y",
+          "year": 1,
+          "projected_price_psf": 24336.58
+        },
+        {
+          "label": "3Y",
+          "year": 3,
+          "projected_price_psf": 32050.93
+        },
+        {
+          "label": "5Y",
+          "year": 5,
+          "projected_price_psf": 42210.62
+        }
+      ],
+      "scenario_comparison": [
+        {
+          "scenario_code": "bear",
+          "scenario_name": "Bear",
+          "projected_1y_price_psf": 22640.06,
+          "projected_3y_price_psf": 25804.46,
+          "projected_5y_price_psf": 29411.14,
+          "annualized_growth_pct": 6.76
+        },
+        {
+          "scenario_code": "base",
+          "scenario_name": "Base",
+          "projected_1y_price_psf": 23488.32,
+          "projected_3y_price_psf": 28814.95,
+          "projected_5y_price_psf": 35349.54,
+          "annualized_growth_pct": 10.76
+        },
+        {
+          "scenario_code": "bull",
+          "scenario_name": "Bull",
+          "projected_1y_price_psf": 24336.58,
+          "projected_3y_price_psf": 32050.93,
+          "projected_5y_price_psf": 42210.62,
+          "annualized_growth_pct": 14.76
+        }
+      ],
+      "selected_scenario_growth_summary": "For the bull scenario, the model estimates an annualized forward growth rate of 14.76% from the current fair asking price baseline.",
+      "interpretation_bullets": [
+        "The project currently screens at a 16.20% premium to the provided benchmark.",
+        "Amenity quality is materially supportive of pricing strength and future retention."
+      ],
+      "risk_flags": [
+        "No major model-based risk flag is currently triggered."
+      ],
+      "confidence_explanation": {
+        "score": 81.76,
+        "label": "Moderate confidence",
+        "explanation": "The analysis is directionally useful, but a few missing or defaulted inputs could still move the output meaningfully."
+      },
+      "sensitivity_scenarios": [
+        {
+          "variable_key": "amenity_score",
+          "variable_label": "Amenity score",
+          "downside_price_psf": 20987.5,
+          "base_price_psf": 21206.5,
+          "upside_price_psf": 21425.5,
+          "downside_change_pct": -1.03,
+          "upside_change_pct": 1.03,
+          "interpretation": "Higher amenity quality usually improves premium retention."
+        },
+        {
+          "variable_key": "inventory_overhang_months",
+          "variable_label": "Inventory overhang",
+          "downside_price_psf": 20878.0,
+          "base_price_psf": 21206.5,
+          "upside_price_psf": 21206.5,
+          "downside_change_pct": -1.55,
+          "upside_change_pct": 0.0,
+          "interpretation": "Lower overhang typically improves near-term pricing support."
+        },
+        {
+          "variable_key": "distance_to_metro_km",
+          "variable_label": "Distance to metro",
+          "downside_price_psf": 20659.0,
+          "base_price_psf": 21206.5,
+          "upside_price_psf": 21024.0,
+          "downside_change_pct": -2.58,
+          "upside_change_pct": -0.86,
+          "interpretation": "Better metro access often supports stronger pricing and growth."
+        },
+        {
+          "variable_key": "benchmark_current_asking_price",
+          "variable_label": "Benchmark asking price",
+          "downside_price_psf": 20146.17,
+          "base_price_psf": 21206.5,
+          "upside_price_psf": 22266.82,
+          "downside_change_pct": -5.0,
+          "upside_change_pct": 5.0,
+          "interpretation": "Benchmark selection can materially shift the current fair price output."
+        }
+      ],
+      "top_sensitivity_driver": "Benchmark asking price"
+    }
+  }
+]

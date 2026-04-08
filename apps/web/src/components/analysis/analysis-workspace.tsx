@@ -1,13 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   analysisInputGroups,
   buildAnalysisFormValuesFromProject,
   buildInitialAnalysisFormValues,
 } from "@/lib/analysis-form";
-import { runProjectionSummaryAnalysis } from "@/lib/api";
+import {
+  exportProjectionAnalysisCsv,
+  fetchSavedAnalyses,
+  runProjectionSummaryAnalysis,
+  saveProjectionAnalysis,
+} from "@/lib/api";
 import { AnalysisGroupCard } from "@/components/analysis/analysis-group-card";
 import { CurrentFairPriceResults } from "@/components/analysis/current-fair-price-results";
 import { ScenarioSelector } from "@/components/analysis/scenario-selector";
@@ -15,7 +20,10 @@ import { ProjectSearchPanel } from "@/components/search/project-search-panel";
 import { StatPill } from "@/components/ui/stat-pill";
 import { City } from "@/types/city";
 import { AnalysisFormValues } from "@/types/analysis-form";
-import { ProjectionAnalysisResponse } from "@/types/pricing";
+import {
+  ProjectionAnalysisResponse,
+  SavedAnalysisListItem,
+} from "@/types/pricing";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
 
@@ -24,6 +32,31 @@ type AnalysisWorkspaceProps = {
   projects: Project[];
   scenarios: ScenarioProfile[];
 };
+
+function downloadFile(content: string, fileName: string, mimeType: string): void {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function buildExportFileBaseName(
+  projectName: string,
+  scenarioCode: string,
+): string {
+  const safeProjectName = projectName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return `${safeProjectName || "analysis"}-${scenarioCode.toLowerCase()}`;
+}
 
 export function AnalysisWorkspace({
   cities,
@@ -46,6 +79,9 @@ export function AnalysisWorkspace({
   const [analysisResult, setAnalysisResult] =
     useState<ProjectionAnalysisResponse | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysisListItem[]>([]);
+  const [saveMessage, setSaveMessage] = useState<string>("");
 
   const selectedProject =
     projects.find((project) => project.id === selectedProjectId) ?? null;
@@ -68,6 +104,15 @@ export function AnalysisWorkspace({
       buildAnalysisFormValuesFromProject(selectedProject)
     );
   }, [projectOverrides, selectedProject]);
+
+  useEffect(() => {
+    async function loadSavedAnalyses(): Promise<void> {
+      const data = await fetchSavedAnalyses();
+      setSavedAnalyses(data);
+    }
+
+    void loadSavedAnalyses();
+  }, []);
 
   function handleFieldChange(
     key: keyof AnalysisFormValues,
@@ -92,6 +137,7 @@ export function AnalysisWorkspace({
     });
 
     setAnalysisResult(null);
+    setSaveMessage("");
   }
 
   async function handleRunAnalysis(): Promise<void> {
@@ -100,6 +146,7 @@ export function AnalysisWorkspace({
     }
 
     setIsAnalysisLoading(true);
+    setSaveMessage("");
 
     const result = await runProjectionSummaryAnalysis({
       ...formValues,
@@ -108,6 +155,71 @@ export function AnalysisWorkspace({
 
     setAnalysisResult(result);
     setIsAnalysisLoading(false);
+  }
+
+  async function handleSaveAnalysis(): Promise<void> {
+    if (!analysisResult || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveMessage("");
+
+    const timestamp = new Date().toLocaleString("en-IN");
+    const saved = await saveProjectionAnalysis({
+      analysis_name: `${analysisResult.project_name} · ${analysisResult.scenario_code.toUpperCase()} · ${timestamp}`,
+      result: analysisResult,
+    });
+
+    if (saved) {
+      setSaveMessage("Analysis saved successfully.");
+      const refreshed = await fetchSavedAnalyses();
+      setSavedAnalyses(refreshed);
+    } else {
+      setSaveMessage("Unable to save analysis.");
+    }
+
+    setIsSaving(false);
+  }
+
+  function handleExportJson(): void {
+    if (!analysisResult) {
+      return;
+    }
+
+    const fileBaseName = buildExportFileBaseName(
+      analysisResult.project_name,
+      analysisResult.scenario_code,
+    );
+
+    downloadFile(
+      JSON.stringify(analysisResult, null, 2),
+      `${fileBaseName}.json`,
+      "application/json",
+    );
+  }
+
+  async function handleExportCsv(): Promise<void> {
+    if (!analysisResult || !selectedProject) {
+      return;
+    }
+
+    const csvContent = await exportProjectionAnalysisCsv({
+      ...formValues,
+      scenario_code: selectedScenarioCode,
+    });
+
+    if (!csvContent) {
+      setSaveMessage("Unable to export CSV.");
+      return;
+    }
+
+    const fileBaseName = buildExportFileBaseName(
+      analysisResult.project_name,
+      analysisResult.scenario_code,
+    );
+
+    downloadFile(csvContent, `${fileBaseName}.csv`, "text/csv;charset=utf-8");
   }
 
   return (
@@ -119,6 +231,7 @@ export function AnalysisWorkspace({
         onSelectProject={(projectId) => {
           setSelectedProjectId(projectId);
           setAnalysisResult(null);
+          setSaveMessage("");
         }}
       />
 
@@ -130,6 +243,7 @@ export function AnalysisWorkspace({
             onChange={(scenarioCode) => {
               setSelectedScenarioCode(scenarioCode);
               setAnalysisResult(null);
+              setSaveMessage("");
             }}
           />
 
@@ -197,7 +311,11 @@ export function AnalysisWorkspace({
                       Latest fair price
                     </div>
                     <div className="mt-2 text-lg font-semibold text-white">
-                      ₹{analysisResult.current_fair_price_psf.toLocaleString("en-IN")} / sq ft
+                      ₹
+                      {analysisResult.current_fair_price_psf.toLocaleString(
+                        "en-IN",
+                      )}{" "}
+                      / sq ft
                     </div>
                   </div>
                   <div className="rounded-2xl bg-white/10 p-4">
@@ -234,10 +352,82 @@ export function AnalysisWorkspace({
                   : "Run fair price, projection, and sensitivity analysis"}
               </button>
 
+              <div className="grid gap-3 sm:grid-cols-3">
+                <button
+                  type="button"
+                  onClick={handleSaveAnalysis}
+                  disabled={!analysisResult || isSaving}
+                  className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportJson}
+                  disabled={!analysisResult}
+                  className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Export JSON
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => void handleExportCsv()}
+                  disabled={!analysisResult}
+                  className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Export CSV
+                </button>
+              </div>
+
+              {saveMessage ? (
+                <div className="rounded-2xl bg-white/10 p-4 text-sm leading-6 text-slate-200">
+                  {saveMessage}
+                </div>
+              ) : null}
+
               <div className="rounded-2xl bg-white/10 p-4 text-sm leading-6 text-slate-200">
                 The analysis engine now returns current fair price, 1Y / 3Y / 5Y
-                projections, sensitivity scenarios, and richer interpretation.
+                projections, sensitivity scenarios, richer interpretation, and
+                export-ready results.
               </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div className="text-sm font-semibold text-slate-950">
+                Saved analyses
+              </div>
+              <div className="text-xs text-slate-500">
+                {savedAnalyses.length} saved
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {savedAnalyses.length > 0 ? (
+                savedAnalyses.slice(0, 5).map((item) => (
+                  <div
+                    key={item.analysis_id}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                  >
+                    <div className="text-sm font-semibold text-slate-950">
+                      {item.analysis_name}
+                    </div>
+                    <div className="mt-1 text-sm text-slate-600">
+                      {item.project_name} · {item.scenario_code.toUpperCase()}
+                    </div>
+                    <div className="mt-2 text-xs text-slate-500">
+                      {new Date(item.created_at).toLocaleString("en-IN")}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+                  No saved analyses yet. Run an analysis and click Save.
+                </div>
+              )}
             </div>
           </div>
 

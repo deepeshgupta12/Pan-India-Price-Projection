@@ -4,6 +4,9 @@ import {
   PricingAnalysisRequest,
   PricingAnalysisResponse,
   ProjectionAnalysisResponse,
+  SaveAnalysisRequest,
+  SavedAnalysisDetailResponse,
+  SavedAnalysisListItem,
 } from "@/types/pricing";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
@@ -49,6 +52,30 @@ async function postToApi<TRequest, TResponse>(
     return (await response.json()) as TResponse;
   } catch (error) {
     console.error(`Failed to post ${path}:`, error);
+    return null;
+  }
+}
+
+async function postTextToApi<TRequest>(
+  path: string,
+  payload: TRequest,
+): Promise<string | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    return await response.text();
+  } catch (error) {
+    console.error(`Failed to post text ${path}:`, error);
     return null;
   }
 }
@@ -116,6 +143,40 @@ export async function runProjectionSummaryAnalysis(
 ): Promise<ProjectionAnalysisResponse | null> {
   return postToApi<PricingAnalysisRequest, ProjectionAnalysisResponse>(
     "/api/v1/pricing/projection-summary",
+    payload,
+  );
+}
+
+export async function saveProjectionAnalysis(
+  payload: SaveAnalysisRequest,
+): Promise<SavedAnalysisDetailResponse | null> {
+  return postToApi<SaveAnalysisRequest, SavedAnalysisDetailResponse>(
+    "/api/v1/pricing/save-analysis",
+    payload,
+  );
+}
+
+export async function fetchSavedAnalyses(): Promise<SavedAnalysisListItem[]> {
+  return (
+    (await fetchFromApi<SavedAnalysisListItem[]>(
+      "/api/v1/pricing/saved-analyses",
+    )) ?? []
+  );
+}
+
+export async function fetchSavedAnalysisById(
+  analysisId: string,
+): Promise<SavedAnalysisDetailResponse | null> {
+  return fetchFromApi<SavedAnalysisDetailResponse>(
+    `/api/v1/pricing/saved-analyses/${analysisId}`,
+  );
+}
+
+export async function exportProjectionAnalysisCsv(
+  payload: PricingAnalysisRequest,
+): Promise<string | null> {
+  return postTextToApi<PricingAnalysisRequest>(
+    "/api/v1/pricing/export-csv",
     payload,
   );
 }

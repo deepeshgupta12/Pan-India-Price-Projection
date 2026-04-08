@@ -785,17 +785,13 @@ Status: Pending
 - Step 2: Next.js frontend foundation with app shell and API health integration
 
 ### In Progress
-- Step 3: Database foundation and seed-ready backend models
+- None
 
 ### Pending
-- SQLAlchemy setup
-- Seed dictionaries
-- Project dictionary APIs
-- Variable dictionary APIs
-- Analysis engine
-- Frontend dictionary-driven forms
-- Charts and dashboards
-- Save/export flows
+- Extended analytics/event instrumentation
+- Saved analysis reopen UX
+- Compare saved runs
+- Additional dashboard polish
 
 ---
 
@@ -812,11 +808,13 @@ Status: Pending
 - Step 7: Backend pricing API, Swagger verification, and frontend current fair price results
 - Step 8: Forward projection engine, scenario comparison, and visual output charts
 - Step 9: Sensitivity layer, richer interpretation, and multi-color chart polish
-
-### In Progress
 - Step 10: Save/export flows and broader dashboard polish
 
+### In Progress
+- None
+
 ### Pending
-- Save/export flows
-- Additional dashboard polish
 - Extended analytics/event instrumentation
+- Saved analysis reopen UX
+- Compare saved runs
+- Additional dashboard polish

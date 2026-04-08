@@ -104,3 +104,27 @@ class ProjectionAnalysisResponse(BaseModel):
     confidence_explanation: ConfidenceExplanation
     sensitivity_scenarios: list[SensitivityScenario]
     top_sensitivity_driver: str
+
+
+class SaveAnalysisRequest(BaseModel):
+    analysis_name: str
+    result: ProjectionAnalysisResponse
+
+
+class SavedAnalysisListItem(BaseModel):
+    analysis_id: str
+    analysis_name: str
+    project_name: str
+    scenario_code: str
+    created_at: str
+    updated_at: str
+
+
+class SavedAnalysisDetailResponse(BaseModel):
+    analysis_id: str
+    analysis_name: str
+    project_name: str
+    scenario_code: str
+    created_at: str
+    updated_at: str
+    result: ProjectionAnalysisResponse

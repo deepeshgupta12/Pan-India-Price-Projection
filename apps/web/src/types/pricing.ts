@@ -99,3 +99,27 @@ export type ProjectionAnalysisResponse = {
   sensitivity_scenarios: SensitivityScenario[];
   top_sensitivity_driver: string;
 };
+
+export type SaveAnalysisRequest = {
+  analysis_name: string;
+  result: ProjectionAnalysisResponse;
+};
+
+export type SavedAnalysisListItem = {
+  analysis_id: string;
+  analysis_name: string;
+  project_name: string;
+  scenario_code: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SavedAnalysisDetailResponse = {
+  analysis_id: string;
+  analysis_name: string;
+  project_name: string;
+  scenario_code: string;
+  created_at: string;
+  updated_at: string;
+  result: ProjectionAnalysisResponse;
+};
