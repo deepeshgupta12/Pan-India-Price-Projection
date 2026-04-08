@@ -27,9 +27,9 @@ export default async function HomePage() {
     <AppShell>
       <div className="space-y-10">
         <PageHeader
-          eyebrow="Step 6 · Editable analysis workspace"
+          eyebrow="Step 7 · Pricing API + current fair price results"
           title="PAN India real estate asking price projection workspace"
-          description="Search a project, prefill analysis inputs, edit assumptions, and prepare the scenario-ready state that the pricing engine will use next. This step establishes the editable workflow foundation for the product."
+          description="The workspace now supports the first real analysis loop: select a project, edit assumptions, run the backend pricing engine, and view current fair asking price output with factor-level explanation."
           actions={
             <div className="flex flex-wrap gap-3">
               <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
@@ -43,7 +43,7 @@ export default async function HomePage() {
 
         <SectionCard
           title="Editable analysis workflow"
-          subtitle="Project selection now drives editable analysis state. This is the form layer that will feed the fair-price and future-projection engines."
+          subtitle="Project selection, editable assumptions, scenario selection, and current fair price calculation now work together as the first full analysis loop."
         >
           <AnalysisWorkspace
             cities={cities}
@@ -59,10 +59,7 @@ export default async function HomePage() {
           {variableDefinitions.length > 0 ? (
             <div className="grid gap-5 xl:grid-cols-2">
               {variableDefinitions.map((variable) => (
-                <VariableGlossaryCard
-                  key={variable.id}
-                  variable={variable}
-                />
+                <VariableGlossaryCard key={variable.id} variable={variable} />
               ))}
             </div>
           ) : (
@@ -75,24 +72,24 @@ export default async function HomePage() {
 
         <SectionCard
           title="What comes next"
-          subtitle="The next step will introduce real pricing logic and current fair asking price output."
+          subtitle="The next step will build on this baseline engine and introduce future projection windows and charted outputs."
         >
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <InfoCard
-              title="Current fair price engine"
-              description="We will compute a baseline asking price using benchmark, product, and risk-linked inputs."
+              title="1Y / 3Y / 5Y projections"
+              description="We will extend the backend engine from current fair price into forward-looking scenario projections."
             />
             <InfoCard
-              title="Scenario-linked preview"
-              description="Selected scenario profiles will begin affecting the calculated output rather than just form state."
+              title="Scenario-linked growth logic"
+              description="Bear, base, and bull profiles will start influencing projected price movement over time."
             />
             <InfoCard
-              title="Output cards"
-              description="We will introduce result cards for fair price, pricing range, and early explanation blocks."
+              title="Charts"
+              description="We will introduce visual outputs for scenario comparison and projected price movement."
             />
             <InfoCard
-              title="Computation layer"
-              description="The first analysis engine module will connect backend calculations with the editable frontend state."
+              title="Richer explanation"
+              description="The pricing explanation layer will expand into more detailed factor interpretation and confidence framing."
             />
           </div>
         </SectionCard>

@@ -1,5 +1,6 @@
 import { City } from "@/types/city";
 import { HealthResponse } from "@/types/health";
+import { PricingAnalysisRequest, PricingAnalysisResponse } from "@/types/pricing";
 import { Project } from "@/types/project";
 import { ScenarioProfile } from "@/types/scenario-profile";
 import { VariableDefinition } from "@/types/variable-definition";
@@ -20,6 +21,30 @@ async function fetchFromApi<T>(path: string): Promise<T | null> {
     return (await response.json()) as T;
   } catch (error) {
     console.error(`Failed to fetch ${path}:`, error);
+    return null;
+  }
+}
+
+async function postToApi<TRequest, TResponse>(
+  path: string,
+  payload: TRequest,
+): Promise<TResponse | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    return (await response.json()) as TResponse;
+  } catch (error) {
+    console.error(`Failed to post ${path}:`, error);
     return null;
   }
 }
@@ -70,5 +95,14 @@ export async function fetchScenarioProfiles(): Promise<ScenarioProfile[]> {
     (await fetchFromApi<ScenarioProfile[]>(
       "/api/v1/dictionaries/scenario-profiles",
     )) ?? []
+  );
+}
+
+export async function runCurrentFairPriceAnalysis(
+  payload: PricingAnalysisRequest,
+): Promise<PricingAnalysisResponse | null> {
+  return postToApi<PricingAnalysisRequest, PricingAnalysisResponse>(
+    "/api/v1/pricing/current-fair-price",
+    payload,
   );
 }

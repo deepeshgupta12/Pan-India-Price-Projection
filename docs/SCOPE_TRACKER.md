@@ -809,13 +809,14 @@ Status: Pending
 - Step 4: Seed ingestion and dictionary APIs
 - Step 5: Frontend dictionary consumption and search-first input shell
 - Step 6: Editable analysis form state and project-prefill workflow
+- Step 7: Backend pricing API, Swagger verification, and frontend current fair price results
 
 ### In Progress
-- Step 7: Backend pricing engine and current fair price API
+- Step 8: Forward projection engine and visual output layer
 
 ### Pending
-- Current fair price calculation API
-- Scenario-influenced projection API
+- 1Y / 3Y / 5Y projection API
+- Scenario chart outputs
 - Sensitivity engine implementation
 - Interactive charts
 - Save/export flows

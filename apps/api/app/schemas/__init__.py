@@ -8,4 +8,5 @@ __all__ = [
     "variable_definition",
     "infrastructure_record",
     "scenario_profile",
+    "pricing",
 ]
