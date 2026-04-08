@@ -806,20 +806,18 @@ Status: Pending
 - Step 1: FastAPI backend foundation with config and health route
 - Step 2: Next.js frontend foundation with dashboard shell and API health integration
 - Step 3: SQLAlchemy database foundation and seed-ready core models
+- Step 4: Seed ingestion and dictionary APIs
 
 ### In Progress
-- Step 4: Dictionary APIs and seed ingestion utilities
+- Step 5: Frontend dictionary consumption and search-first analysis input shell
 
 ### Pending
-- Seed ingestion command/service
-- Dictionary listing APIs
-- Project search API
-- Variable definition API
-- Infrastructure listing API
-- Scenario profile API
+- Frontend project search UI
+- Frontend grouped input cards
+- Variable glossary rendering
+- Comparable project UX
 - Pricing engine implementation
 - Projection engine implementation
 - Sensitivity engine implementation
-- Frontend input cards and glossary UI
 - Interactive charts
 - Save/export flows
