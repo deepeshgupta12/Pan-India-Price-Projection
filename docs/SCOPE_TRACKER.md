@@ -788,10 +788,7 @@ Status: Pending
 - None
 
 ### Pending
-- Extended analytics/event instrumentation
-- Saved analysis reopen UX
-- Compare saved runs
-- Additional dashboard polish
+- None (Step 11 complete — all V1 scope delivered)
 
 ---
 
@@ -809,12 +806,55 @@ Status: Pending
 - Step 8: Forward projection engine, scenario comparison, and visual output charts
 - Step 9: Sensitivity layer, richer interpretation, and multi-color chart polish
 - Step 10: Save/export flows and broader dashboard polish
+- Step 11: Analytics instrumentation, saved analysis reopen, compare runs, dashboard polish pass
+
+### Step 11 Delivery Detail
+
+#### Step 11.1 — Analytics Foundation
+- Created `apps/web/src/lib/analytics.ts` with a lightweight event tracking layer
+- Instrumented events: searched_project, selected_project, changed_scenario, edited_input,
+  ran_analysis, saved_analysis, exported_json, exported_csv, opened_saved_analysis,
+  compared_saved_analyses
+- All events log to console in development; forward to analytics provider by swapping
+  the `trackEvent` implementation
+- Analytics calls wired into analysis-workspace.tsx and project-search-panel.tsx
+
+#### Step 11.2 — Saved Analysis Reopen + Detail View
+- Created `apps/web/src/components/analysis/saved-analysis-panel.tsx` — interactive
+  saved-analyses panel in the right rail with clickable items, "Open" button, compare
+  checkboxes, and compare CTA
+- Reopening a saved analysis loads its result into the main results area via
+  `fetchSavedAnalysisById`
+- A "Viewing saved analysis" banner displays the analysis name, project, scenario, and
+  created date with a "Clear" action
+- `resultToDisplay` computed value resolves to reopened result or fresh run result
+
+#### Step 11.3 — Compare Saved Runs
+- Created `apps/web/src/components/analysis/compare-runs-section.tsx` — full-width
+  side-by-side comparison table
+- Comparison covers: fair price, fair price band, benchmark delta, confidence score,
+  1Y / 3Y / 5Y projections, top sensitivity driver, scenario
+- "Better" tags highlight the stronger value for each numeric metric
+- Risk flags and interpretation summaries shown for both analyses
+- Appears below the workspace grid; close button resets compare state
+
+#### Step 11.4 — Broader Polish Pass
+- `current-fair-price-results.tsx`: introduced `MetricCard` and `SectionHeader`
+  sub-components; accent MetricCard for the primary fair-price output; colored pill
+  for factor contribution (green/red); risk flags use amber styling; loading state
+  has a spinner; empty state is more descriptive
+- `analysis-workspace.tsx`: cleaner right-rail workspace card, improved typography
+  hierarchy, removed noisy "Prefill logic" info card
+- `project-search-panel.tsx`: improved label typography, cleaner empty state,
+  improved field spacing
+- `app-shell.tsx`: sticky header, logo mark, green system-online indicator, footer
+- `globals.css`: Inter font stack, antialiasing, custom scrollbar, tabular-nums
+  utility class, selection color
+- `page.tsx`: updated eyebrow to "Step 11 complete", cleaner description, removed
+  "What comes next" section
 
 ### In Progress
 - None
 
 ### Pending
-- Extended analytics/event instrumentation
-- Saved analysis reopen UX
-- Compare saved runs
-- Additional dashboard polish
+- None — V1 scope fully delivered

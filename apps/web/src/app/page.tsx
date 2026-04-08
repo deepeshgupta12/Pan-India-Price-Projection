@@ -26,24 +26,32 @@ export default async function HomePage() {
   return (
     <AppShell>
       <div className="space-y-10">
+        {/* ── Page header ──────────────────────────────────────────────── */}
         <PageHeader
-          eyebrow="Step 10 · Save/export flows and broader dashboard polish"
+          eyebrow="Step 11 complete · Analytics · Saved runs · Compare · Polish"
           title="PAN India real estate asking price projection workspace"
-          description="The workspace now supports saveable analysis runs, JSON and CSV exports, improved right-rail continuity, and saved analysis visibility alongside pricing, projections, and sensitivity outputs."
+          description="Search any project, configure assumptions, run fair price and forward projection analysis, save snapshots, and compare runs side by side — all in one workspace."
           actions={
             <div className="flex flex-wrap gap-3">
-              <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
+              <StatPill
+                label="Backend"
+                value={health ? "Connected" : "Unavailable"}
+              />
               <StatPill label="Cities" value={String(cities.length)} />
               <StatPill label="Projects" value={String(projects.length)} />
-              <StatPill label="Variables" value={String(variableDefinitions.length)} />
+              <StatPill
+                label="Variables"
+                value={String(variableDefinitions.length)}
+              />
               <StatPill label="Scenarios" value={String(scenarios.length)} />
             </div>
           }
         />
 
+        {/* ── Workspace ────────────────────────────────────────────────── */}
         <SectionCard
-          title="Editable analysis workflow"
-          subtitle="Project selection, editable assumptions, pricing outputs, forward projections, sensitivity interpretation, and save/export actions now work together as a fuller decision-support experience."
+          title="Analysis workspace"
+          subtitle="Select a project, adjust scenario and input assumptions, run the pricing and projection engine, then save or export your result. Use the saved-analyses panel to reopen any previous run or compare two runs side by side."
         >
           <AnalysisWorkspace
             cities={cities}
@@ -52,9 +60,10 @@ export default async function HomePage() {
           />
         </SectionCard>
 
+        {/* ── Variable glossary ─────────────────────────────────────────── */}
         <SectionCard
           title="Variable glossary"
-          subtitle="Glossary visibility remains intact so every important input can still be interpreted with context."
+          subtitle="Every input variable is documented with its definition, unit, acceptable range, and formula impact so analysts can interpret any result with full context."
         >
           {variableDefinitions.length > 0 ? (
             <div className="grid gap-5 xl:grid-cols-2">
@@ -65,33 +74,9 @@ export default async function HomePage() {
           ) : (
             <InfoCard
               title="No variable definitions loaded"
-              description="The backend variable dictionary did not return any records."
+              description="The backend variable dictionary did not return any records. Confirm the seed migration has run successfully."
             />
           )}
-        </SectionCard>
-
-        <SectionCard
-          title="What comes next"
-          subtitle="The next step can extend this product into deeper persistence, comparison workflows, and event instrumentation."
-        >
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <InfoCard
-              title="Saved analysis detail views"
-              description="We can add richer revisit flows where saved analyses reopen directly into the workspace."
-            />
-            <InfoCard
-              title="Compare saved runs"
-              description="We can support comparison of the same project across scenarios and assumption sets."
-            />
-            <InfoCard
-              title="Analytics instrumentation"
-              description="We can begin wiring tracked events for analysis runs, saves, exports, and scenario changes."
-            />
-            <InfoCard
-              title="Output polish"
-              description="We can further refine dashboard hierarchy, saved-state continuity, and richer export packaging."
-            />
-          </div>
         </SectionCard>
       </div>
     </AppShell>
