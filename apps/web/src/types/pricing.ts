@@ -19,6 +19,23 @@ export type ScenarioProjectionSummary = {
   annualized_growth_pct: number;
 };
 
+export type SensitivityScenario = {
+  variable_key: string;
+  variable_label: string;
+  downside_price_psf: number;
+  base_price_psf: number;
+  upside_price_psf: number;
+  downside_change_pct: number;
+  upside_change_pct: number;
+  interpretation: string;
+};
+
+export type ConfidenceExplanation = {
+  score: number;
+  label: string;
+  explanation: string;
+};
+
 export type PricingAnalysisRequest = {
   project_name: string;
   city_id: number | null;
@@ -76,4 +93,9 @@ export type ProjectionAnalysisResponse = {
   selected_scenario_projection_points: ProjectionPoint[];
   scenario_comparison: ScenarioProjectionSummary[];
   selected_scenario_growth_summary: string;
+  interpretation_bullets: string[];
+  risk_flags: string[];
+  confidence_explanation: ConfidenceExplanation;
+  sensitivity_scenarios: SensitivityScenario[];
+  top_sensitivity_driver: string;
 };

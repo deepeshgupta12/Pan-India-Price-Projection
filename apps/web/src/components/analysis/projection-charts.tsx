@@ -23,6 +23,21 @@ type ProjectionChartsProps = {
   scenarioComparison: ScenarioProjectionSummary[];
 };
 
+function formatCurrencyTooltip(value: unknown): string {
+  if (typeof value === "number") {
+    return `₹${value.toLocaleString("en-IN")} / sq ft`;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (!Number.isNaN(parsed)) {
+      return `₹${parsed.toLocaleString("en-IN")} / sq ft`;
+    }
+  }
+
+  return "N/A";
+}
+
 export function ProjectionCharts({
   projectionPoints,
   scenarioComparison,
@@ -53,12 +68,14 @@ export function ProjectionCharts({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" />
               <YAxis />
-              <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")} / sq ft`} />
+              <Tooltip formatter={(value) => formatCurrencyTooltip(value)} />
               <Legend />
               <Line
                 type="monotone"
                 dataKey="projected_price_psf"
                 name="Projected price"
+                stroke="#2563eb"
+                activeDot={{ r: 6 }}
                 strokeWidth={3}
               />
             </LineChart>
@@ -83,11 +100,11 @@ export function ProjectionCharts({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="scenario" />
               <YAxis />
-              <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")} / sq ft`} />
+              <Tooltip formatter={(value) => formatCurrencyTooltip(value)} />
               <Legend />
-              <Bar dataKey="1Y" />
-              <Bar dataKey="3Y" />
-              <Bar dataKey="5Y" />
+              <Bar dataKey="1Y" fill="#2563eb" />
+              <Bar dataKey="3Y" fill="#8b5cf6" />
+              <Bar dataKey="5Y" fill="#14b8a6" />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -53,6 +53,23 @@ class ScenarioProjectionSummary(BaseModel):
     annualized_growth_pct: float
 
 
+class SensitivityScenario(BaseModel):
+    variable_key: str
+    variable_label: str
+    downside_price_psf: float
+    base_price_psf: float
+    upside_price_psf: float
+    downside_change_pct: float
+    upside_change_pct: float
+    interpretation: str
+
+
+class ConfidenceExplanation(BaseModel):
+    score: float
+    label: str
+    explanation: str
+
+
 class PricingAnalysisResponse(BaseModel):
     project_name: str
     scenario_code: str
@@ -82,3 +99,8 @@ class ProjectionAnalysisResponse(BaseModel):
     selected_scenario_projection_points: list[ProjectionPoint]
     scenario_comparison: list[ScenarioProjectionSummary]
     selected_scenario_growth_summary: str
+    interpretation_bullets: list[str]
+    risk_flags: list[str]
+    confidence_explanation: ConfidenceExplanation
+    sensitivity_scenarios: list[SensitivityScenario]
+    top_sensitivity_driver: str

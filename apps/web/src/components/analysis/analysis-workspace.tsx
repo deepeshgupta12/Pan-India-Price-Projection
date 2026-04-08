@@ -212,6 +212,14 @@ export function AnalysisWorkspace({
                       / sq ft
                     </div>
                   </div>
+                  <div className="rounded-2xl bg-white/10 p-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">
+                      Top sensitivity driver
+                    </div>
+                    <div className="mt-2 text-base font-semibold text-white">
+                      {analysisResult.top_sensitivity_driver}
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
@@ -223,12 +231,12 @@ export function AnalysisWorkspace({
               >
                 {isAnalysisLoading
                   ? "Running analysis..."
-                  : "Run fair price and projection analysis"}
+                  : "Run fair price, projection, and sensitivity analysis"}
               </button>
 
               <div className="rounded-2xl bg-white/10 p-4 text-sm leading-6 text-slate-200">
                 The analysis engine now returns current fair price, 1Y / 3Y / 5Y
-                projections, and scenario comparison outputs with charts.
+                projections, sensitivity scenarios, and richer interpretation.
               </div>
             </div>
           </div>

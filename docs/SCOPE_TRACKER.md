@@ -811,12 +811,12 @@ Status: Pending
 - Step 6: Editable analysis form state and project-prefill workflow
 - Step 7: Backend pricing API, Swagger verification, and frontend current fair price results
 - Step 8: Forward projection engine, scenario comparison, and visual output charts
+- Step 9: Sensitivity layer, richer interpretation, and multi-color chart polish
 
 ### In Progress
-- Step 9: Sensitivity layer and richer interpretability
+- Step 10: Save/export flows and broader dashboard polish
 
 ### Pending
-- Sensitivity engine implementation
 - Save/export flows
-- Additional explanation depth
-- Dashboard polish
+- Additional dashboard polish
+- Extended analytics/event instrumentation

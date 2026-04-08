@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from app.schemas.pricing import (
+    ConfidenceExplanation,
     PricingAnalysisInput,
     PricingAnalysisResponse,
     PricingFactorBreakdown,
     ProjectionAnalysisResponse,
     ProjectionPoint,
     ScenarioProjectionSummary,
+    SensitivityScenario,
 )
 
 
@@ -114,6 +116,116 @@ def _projection_growth_rate(payload: PricingAnalysisInput, scenario_code: str) -
         0.18,
     )
     return round(growth_rate, 6)
+
+
+def _confidence_explanation(score: float) -> ConfidenceExplanation:
+    if score >= 85:
+        return ConfidenceExplanation(
+            score=score,
+            label="High confidence",
+            explanation=(
+                "The analysis has strong input completeness and enough populated "
+                "drivers to support a comparatively stable output."
+            ),
+        )
+
+    if score >= 70:
+        return ConfidenceExplanation(
+            score=score,
+            label="Moderate confidence",
+            explanation=(
+                "The analysis is directionally useful, but a few missing or defaulted "
+                "inputs could still move the output meaningfully."
+            ),
+        )
+
+    return ConfidenceExplanation(
+        score=score,
+        label="Low confidence",
+        explanation=(
+            "The output should be treated cautiously because several important inputs "
+            "are missing or under-specified."
+        ),
+    )
+
+
+def _build_interpretation_bullets(
+    payload: PricingAnalysisInput,
+    base: PricingComputation,
+) -> list[str]:
+    bullets: list[str] = []
+
+    if base.premium_discount_vs_benchmark_pct >= 0:
+        bullets.append(
+            f"The project currently screens at a {base.premium_discount_vs_benchmark_pct:.2f}% premium "
+            f"to the provided benchmark."
+        )
+    else:
+        bullets.append(
+            f"The project currently screens at a {abs(base.premium_discount_vs_benchmark_pct):.2f}% discount "
+            f"to the provided benchmark."
+        )
+
+    amenity_score = _to_float(payload.amenity_score, 0.0)
+    if amenity_score >= 8:
+        bullets.append(
+            "Amenity quality is materially supportive of pricing strength and future retention."
+        )
+    elif amenity_score <= 5:
+        bullets.append(
+            "Amenity quality is not yet strong enough to support an aggressive premium."
+        )
+
+    inventory_overhang_months = _to_float(payload.inventory_overhang_months, 0.0)
+    if inventory_overhang_months >= 18:
+        bullets.append(
+            "Inventory overhang is elevated and can weigh on near-term price acceleration."
+        )
+    elif 0 < inventory_overhang_months <= 10:
+        bullets.append(
+            "Supply conditions look relatively supportive for near-term price movement."
+        )
+
+    distance_to_metro_km = _to_float(payload.distance_to_metro_km, 0.0)
+    if 0 < distance_to_metro_km <= 2:
+        bullets.append(
+            "Transit accessibility is a positive support factor for current pricing and projection strength."
+        )
+
+    return bullets[:4]
+
+
+def _build_risk_flags(payload: PricingAnalysisInput) -> list[str]:
+    flags: list[str] = []
+
+    inventory_overhang_months = _to_float(payload.inventory_overhang_months, 0.0)
+    if inventory_overhang_months >= 18:
+        flags.append("High inventory overhang may suppress short-term pricing power.")
+
+    legal_clarity_score = _to_float(payload.legal_clarity_score, 0.0)
+    if 0 < legal_clarity_score < 7:
+        flags.append("Legal clarity score is below comfort threshold.")
+
+    density_units_per_acre = _to_float(payload.density_units_per_acre, 0.0)
+    if density_units_per_acre > 90:
+        flags.append("High project density may cap premium realization.")
+
+    distance_to_metro_km = _to_float(payload.distance_to_metro_km, 0.0)
+    if distance_to_metro_km > 4:
+        flags.append("Metro access is relatively weak for a premium-led pricing stance.")
+
+    if not flags:
+        flags.append("No major model-based risk flag is currently triggered.")
+
+    return flags[:4]
+
+
+def _build_sensitivity_input(
+    payload: PricingAnalysisInput,
+    field_name: str,
+    new_value: float,
+) -> PricingAnalysisInput:
+    return payload.model_copy(update={field_name: str(round(new_value, 4))})
 
 
 def _compute_base_pricing(payload: PricingAnalysisInput) -> PricingComputation:
@@ -239,6 +351,92 @@ def _compute_base_pricing(payload: PricingAnalysisInput) -> PricingComputation:
     )
 
 
+def _build_sensitivity_scenarios(
+    payload: PricingAnalysisInput,
+    base: PricingComputation,
+) -> tuple[list[SensitivityScenario], str]:
+    definitions = [
+        {
+            "field": "amenity_score",
+            "label": "Amenity score",
+            "downside": max(_to_float(payload.amenity_score, 8.0) - 1.0, 0.0),
+            "upside": _to_float(payload.amenity_score, 8.0) + 1.0,
+            "interpretation": "Higher amenity quality usually improves premium retention.",
+        },
+        {
+            "field": "inventory_overhang_months",
+            "label": "Inventory overhang",
+            "downside": max(_to_float(payload.inventory_overhang_months, 12.0) + 6.0, 0.0),
+            "upside": max(_to_float(payload.inventory_overhang_months, 12.0) - 6.0, 0.0),
+            "interpretation": "Lower overhang typically improves near-term pricing support.",
+        },
+        {
+            "field": "distance_to_metro_km",
+            "label": "Distance to metro",
+            "downside": _to_float(payload.distance_to_metro_km, 2.0) + 1.0,
+            "upside": max(_to_float(payload.distance_to_metro_km, 2.0) - 1.0, 0.1),
+            "interpretation": "Better metro access often supports stronger pricing and growth.",
+        },
+        {
+            "field": "benchmark_current_asking_price",
+            "label": "Benchmark asking price",
+            "downside": _to_float(payload.benchmark_current_asking_price, 10000.0) * 0.95,
+            "upside": _to_float(payload.benchmark_current_asking_price, 10000.0) * 1.05,
+            "interpretation": "Benchmark selection can materially shift the current fair price output.",
+        },
+    ]
+
+    scenarios: list[SensitivityScenario] = []
+    top_driver = ""
+    top_driver_abs_change = -1.0
+
+    for definition in definitions:
+        downside_payload = _build_sensitivity_input(
+            payload,
+            definition["field"],
+            float(definition["downside"]),
+        )
+        upside_payload = _build_sensitivity_input(
+            payload,
+            definition["field"],
+            float(definition["upside"]),
+        )
+
+        downside_result = _compute_base_pricing(downside_payload)
+        upside_result = _compute_base_pricing(upside_payload)
+
+        downside_change_pct = round(
+            ((downside_result.current_fair_price_psf - base.current_fair_price_psf)
+             / base.current_fair_price_psf) * 100,
+            2,
+        )
+        upside_change_pct = round(
+            ((upside_result.current_fair_price_psf - base.current_fair_price_psf)
+             / base.current_fair_price_psf) * 100,
+            2,
+        )
+
+        max_abs_change = max(abs(downside_change_pct), abs(upside_change_pct))
+        if max_abs_change > top_driver_abs_change:
+            top_driver_abs_change = max_abs_change
+            top_driver = str(definition["label"])
+
+        scenarios.append(
+            SensitivityScenario(
+                variable_key=str(definition["field"]),
+                variable_label=str(definition["label"]),
+                downside_price_psf=downside_result.current_fair_price_psf,
+                base_price_psf=base.current_fair_price_psf,
+                upside_price_psf=upside_result.current_fair_price_psf,
+                downside_change_pct=downside_change_pct,
+                upside_change_pct=upside_change_pct,
+                interpretation=str(definition["interpretation"]),
+            )
+        )
+
+    return scenarios, top_driver or "Benchmark asking price"
+
+
 def compute_current_fair_price(
     payload: PricingAnalysisInput,
 ) -> PricingAnalysisResponse:
@@ -327,6 +525,11 @@ def compute_projection_analysis(
         f"from the current fair asking price baseline."
     )
 
+    sensitivity_scenarios, top_sensitivity_driver = _build_sensitivity_scenarios(
+        payload,
+        base,
+    )
+
     return ProjectionAnalysisResponse(
         project_name=payload.project_name or "Selected Project",
         scenario_code=payload.scenario_code,
@@ -342,4 +545,9 @@ def compute_projection_analysis(
         selected_scenario_projection_points=selected_points,
         scenario_comparison=scenario_summaries,
         selected_scenario_growth_summary=selected_growth_summary,
+        interpretation_bullets=_build_interpretation_bullets(payload, base),
+        risk_flags=_build_risk_flags(payload),
+        confidence_explanation=_confidence_explanation(base.confidence_score),
+        sensitivity_scenarios=sensitivity_scenarios,
+        top_sensitivity_driver=top_sensitivity_driver,
     )

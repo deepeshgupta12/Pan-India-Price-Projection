@@ -27,9 +27,9 @@ export default async function HomePage() {
     <AppShell>
       <div className="space-y-10">
         <PageHeader
-          eyebrow="Step 8 · Forward projection engine and visual output layer"
+          eyebrow="Step 9 · Sensitivity layer and richer interpretability"
           title="PAN India real estate asking price projection workspace"
-          description="The workspace now supports current fair value analysis, 1Y / 3Y / 5Y projections, scenario comparison, and visual output charts. This step extends the pricing engine into forward-looking analysis."
+          description="The workspace now adds sensitivity scenarios, richer narrative interpretation, risk flags, confidence framing, and improved chart readability on top of the forward projection engine."
           actions={
             <div className="flex flex-wrap gap-3">
               <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
@@ -43,7 +43,7 @@ export default async function HomePage() {
 
         <SectionCard
           title="Editable analysis workflow"
-          subtitle="Project selection, editable assumptions, scenario selection, current fair price output, and forward projections now work together as a richer analysis loop."
+          subtitle="Project selection, editable assumptions, fair price output, forward projections, and sensitivity interpretation now work together as a richer decision-support experience."
         >
           <AnalysisWorkspace
             cities={cities}
@@ -72,24 +72,24 @@ export default async function HomePage() {
 
         <SectionCard
           title="What comes next"
-          subtitle="The next step will deepen interpretability and move toward sensitivity, save/export, and further output polish."
+          subtitle="The next step will move into save/export flows and broader output polish."
         >
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <InfoCard
-              title="Sensitivity engine"
-              description="We will show how changes in assumptions influence fair price and future projection outputs."
+              title="Save analysis"
+              description="We will begin persisting analysis state so users can revisit project runs."
             />
             <InfoCard
-              title="Deeper explanation"
-              description="We will expand pricing reasoning and confidence logic to make the model more interpretable."
+              title="Export flows"
+              description="We will start introducing export-ready analysis outputs and downloadable artifacts."
             />
             <InfoCard
-              title="Save and export"
-              description="We will start introducing saveable analysis state and export-ready outputs."
+              title="Workflow polish"
+              description="We will improve chart readability, output continuity, and interaction quality across the page."
             />
             <InfoCard
-              title="Dashboard polish"
-              description="We will improve result discoverability, CTA states, and continuity across the workflow."
+              title="Interpretation depth"
+              description="We will continue sharpening narrative explanation so the model is easier to trust and act on."
             />
           </div>
         </SectionCard>
