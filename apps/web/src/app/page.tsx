@@ -1,111 +1,176 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/layout/page-header";
+import { VariableGlossaryCard } from "@/components/glossary/variable-glossary-card";
+import { InputGroupOverview } from "@/components/inputs/input-group-overview";
+import { ProjectSearchPanel } from "@/components/search/project-search-panel";
 import { InfoCard } from "@/components/ui/info-card";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatPill } from "@/components/ui/stat-pill";
-import { fetchApiHealth } from "@/lib/api";
+import {
+  fetchApiHealth,
+  fetchCities,
+  fetchProjects,
+  fetchVariableDefinitions,
+} from "@/lib/api";
+
+const inputGroups = [
+  {
+    title: "Project basics",
+    description:
+      "Identity and structural details of the subject project that help anchor the baseline analysis.",
+    fields: [
+      "Project name",
+      "City",
+      "Micromarket",
+      "Locality",
+      "Developer",
+      "Project stage",
+      "Launch date",
+      "Expected possession date",
+    ],
+  },
+  {
+    title: "Product and configuration",
+    description:
+      "Physical and product-level variables that affect quality premium, density, and marketability.",
+    fields: [
+      "Land parcel",
+      "Total units",
+      "Towers",
+      "Floors",
+      "Average unit size",
+      "Unit mix",
+      "Parking ratio",
+      "Open space %",
+      "Amenity score",
+    ],
+  },
+  {
+    title: "Market and benchmarks",
+    description:
+      "Comparable and market context variables that influence current fair asking price.",
+    fields: [
+      "Locality asking price",
+      "Micromarket asking price",
+      "Ready-to-move price",
+      "Resale price",
+      "Average rent",
+      "Rental yield",
+      "Inventory overhang",
+      "Absorption",
+    ],
+  },
+  {
+    title: "Connectivity and infrastructure",
+    description:
+      "Variables related to transit access, job corridors, and upcoming infrastructure-led uplift.",
+    fields: [
+      "Distance to metro",
+      "Distance to job hub",
+      "Road access",
+      "Social infra score",
+      "Upcoming infra records",
+      "Infra impact timing",
+      "Infra confidence",
+    ],
+  },
+];
 
 export default async function HomePage() {
-  const health = await fetchApiHealth();
+  const [health, cities, projects, variableDefinitions] = await Promise.all([
+    fetchApiHealth(),
+    fetchCities(),
+    fetchProjects({ limit: 100 }),
+    fetchVariableDefinitions(),
+  ]);
 
   return (
     <AppShell>
       <div className="space-y-10">
         <PageHeader
-          eyebrow="Foundation Setup"
+          eyebrow="Step 5 · Search-first input shell"
           title="PAN India real estate asking price projection workspace"
-          description="This product will estimate current fair asking price, future projections, factor contributions, infrastructure impact, and scenario-based price movement for residential primary-market projects across Indian cities."
+          description="Search and select a project, inspect structured project metadata, and understand how each variable will be represented in the product. Every input will carry visible meaning, placeholder guidance, example usage, and formula relevance."
           actions={
             <div className="flex flex-wrap gap-3">
+              <StatPill label="Backend" value={health ? "Connected" : "Unavailable"} />
+              <StatPill label="Cities loaded" value={String(cities.length)} />
+              <StatPill label="Projects loaded" value={String(projects.length)} />
               <StatPill
-                label="Frontend"
-                value="Next.js foundation ready"
-              />
-              <StatPill
-                label="Backend"
-                value={health ? "Connected" : "Unavailable"}
+                label="Variables loaded"
+                value={String(variableDefinitions.length)}
               />
             </div>
           }
         />
 
         <SectionCard
-          title="System health and implementation base"
-          subtitle="This page is the initial product shell. Later steps will convert it into the full analysis workflow with dictionaries, input groups, graphs, comparable projects, glossary views, and scenario outputs."
+          title="Search-first project dictionary workflow"
+          subtitle="This is the first real product interaction layer. Users can begin with project search, then move into variable-led editing and future projection analysis."
         >
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <InfoCard
-              title="Backend API status"
-              description={
-                health
-                  ? `Connected to ${health.app_name} (${health.version}) in ${health.environment} mode.`
-                  : "Backend is not reachable right now. Start the FastAPI server to restore connectivity."
-              }
-            />
-            <InfoCard
-              title="Project dictionary"
-              description="Will support project-led search, standardised prefill, city-micromarket-locality mapping, and editable project attributes."
-            />
-            <InfoCard
-              title="Variable dictionary"
-              description="Every input will have meaning, help text, placeholders, validation, formula dependency, and business interpretation visible in the UI."
-            />
-            <InfoCard
-              title="Infrastructure engine"
-              description="Upcoming infrastructure will be modeled as a structured impact layer with timing, distance, probability, status, and weighted uplift contribution."
-            />
+          <ProjectSearchPanel cities={cities} projects={projects} />
+        </SectionCard>
+
+        <SectionCard
+          title="Frozen input architecture"
+          subtitle="The editable analysis form will be built around grouped input cards so users understand what each block represents."
+        >
+          <div className="grid gap-5 lg:grid-cols-2">
+            {inputGroups.map((group) => (
+              <InputGroupOverview
+                key={group.title}
+                title={group.title}
+                description={group.description}
+                fields={group.fields}
+              />
+            ))}
           </div>
         </SectionCard>
 
-        <div className="grid gap-6 xl:grid-cols-3">
-          <div className="xl:col-span-2">
-            <SectionCard
-              title="Frozen V1 scope"
-              subtitle="The frontend build will progressively implement these modules as we move step by step."
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <InfoCard
-                  title="Input experience"
-                  description="Search-first and manual workflows, grouped cards, helper text for each field, and dictionary-driven forms."
+        <SectionCard
+          title="Variable glossary preview"
+          subtitle="Every input, dropdown, and placeholder must be explainable. This glossary view is the base for that requirement."
+        >
+          {variableDefinitions.length > 0 ? (
+            <div className="grid gap-5 xl:grid-cols-2">
+              {variableDefinitions.map((variable) => (
+                <VariableGlossaryCard
+                  key={variable.id}
+                  variable={variable}
                 />
-                <InfoCard
-                  title="Output experience"
-                  description="Beautiful cards, comparable project tables, fair price range, scenario projections, risk and confidence indicators."
-                />
-                <InfoCard
-                  title="Analytics layer"
-                  description="Factor contributions, sensitivity analysis, infrastructure impact decomposition, and scenario comparison."
-                />
-                <InfoCard
-                  title="Export and save"
-                  description="Save analysis snapshots locally and support export flows as the product matures."
-                />
-              </div>
-            </SectionCard>
-          </div>
+              ))}
+            </div>
+          ) : (
+            <InfoCard
+              title="No variable definitions loaded"
+              description="The backend variable dictionary did not return any records."
+            />
+          )}
+        </SectionCard>
 
-          <div>
-            <SectionCard
-              title="Next implementation milestones"
-              subtitle="This panel mirrors our scoped build path."
-            >
-              <div className="space-y-4">
-                <InfoCard
-                  title="Step 3"
-                  description="Database foundation, SQLAlchemy setup, seed models, and core schema definitions."
-                />
-                <InfoCard
-                  title="Step 4"
-                  description="Dictionary APIs for cities, micromarkets, localities, projects, developers, and variable metadata."
-                />
-                <InfoCard
-                  title="Step 5"
-                  description="Frontend search flow, manual analysis form, tooltip-ready variable cards, and glossary rendering."
-                />
-              </div>
-            </SectionCard>
+        <SectionCard
+          title="What comes next"
+          subtitle="The next step will begin converting this information shell into a real editable analysis experience."
+        >
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <InfoCard
+              title="Editable input cards"
+              description="We will render user-editable fields from the variable dictionary instead of relying on hardcoded field descriptions."
+            />
+            <InfoCard
+              title="Project prefill"
+              description="Selecting a project will prefill the input state so the user can edit assumptions rather than start from scratch."
+            />
+            <InfoCard
+              title="Scenario base"
+              description="We will start wiring scenario profiles and calculation-ready state for bear, base, bull, and custom assumptions."
+            />
+            <InfoCard
+              title="Analysis workflow"
+              description="The page will evolve from browse-only mode into a real projection workspace with form sections and action controls."
+            />
           </div>
-        </div>
+        </SectionCard>
       </div>
     </AppShell>
   );

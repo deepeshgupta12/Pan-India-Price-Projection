@@ -1,21 +1,68 @@
+import { City } from "@/types/city";
 import { HealthResponse } from "@/types/health";
+import { Project } from "@/types/project";
+import { VariableDefinition } from "@/types/variable-definition";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:9000";
 
-export async function fetchApiHealth(): Promise<HealthResponse | null> {
+async function fetchFromApi<T>(path: string): Promise<T | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/health`, {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       cache: "no-store",
     });
 
     if (!response.ok) {
-      throw new Error(`Health API failed with status ${response.status}`);
+      throw new Error(`API request failed with status ${response.status}`);
     }
 
-    return (await response.json()) as HealthResponse;
+    return (await response.json()) as T;
   } catch (error) {
-    console.error("Failed to fetch API health:", error);
+    console.error(`Failed to fetch ${path}:`, error);
     return null;
   }
+}
+
+export async function fetchApiHealth(): Promise<HealthResponse | null> {
+  return fetchFromApi<HealthResponse>("/api/v1/health");
+}
+
+export async function fetchCities(): Promise<City[]> {
+  return (await fetchFromApi<City[]>("/api/v1/dictionaries/cities")) ?? [];
+}
+
+export async function fetchProjects(params?: {
+  cityId?: number;
+  query?: string;
+  limit?: number;
+}): Promise<Project[]> {
+  const searchParams = new URLSearchParams();
+
+  if (params?.cityId) {
+    searchParams.set("city_id", String(params.cityId));
+  }
+
+  if (params?.query) {
+    searchParams.set("q", params.query);
+  }
+
+  searchParams.set("limit", String(params?.limit ?? 50));
+
+  const suffix = searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : "";
+
+  return (
+    (await fetchFromApi<Project[]>(
+      `/api/v1/dictionaries/projects${suffix}`,
+    )) ?? []
+  );
+}
+
+export async function fetchVariableDefinitions(): Promise<VariableDefinition[]> {
+  return (
+    (await fetchFromApi<VariableDefinition[]>(
+      "/api/v1/dictionaries/variable-definitions",
+    )) ?? []
+  );
 }

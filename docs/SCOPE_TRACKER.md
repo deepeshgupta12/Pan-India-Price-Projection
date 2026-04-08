@@ -807,15 +807,14 @@ Status: Pending
 - Step 2: Next.js frontend foundation with dashboard shell and API health integration
 - Step 3: SQLAlchemy database foundation and seed-ready core models
 - Step 4: Seed ingestion and dictionary APIs
+- Step 5: Frontend dictionary consumption and search-first input shell
 
 ### In Progress
-- Step 5: Frontend dictionary consumption and search-first analysis input shell
+- Step 6: Editable analysis form state and project-prefill workflow
 
 ### Pending
-- Frontend project search UI
-- Frontend grouped input cards
-- Variable glossary rendering
-- Comparable project UX
+- Editable dictionary-driven form fields
+- Scenario state management
 - Pricing engine implementation
 - Projection engine implementation
 - Sensitivity engine implementation

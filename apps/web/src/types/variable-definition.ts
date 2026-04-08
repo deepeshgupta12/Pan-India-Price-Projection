@@ -1,0 +1,26 @@
+export type VariableDefinition = {
+  id: number;
+  field_key: string;
+  display_name: string;
+  category: string;
+  description: string;
+  why_it_matters: string;
+  placeholder: string | null;
+  help_text: string | null;
+  allowed_values: unknown[] | Record<string, unknown> | null;
+  unit: string | null;
+  min_value: number | null;
+  max_value: number | null;
+  default_value: string | null;
+  required_flag: boolean;
+  editable_flag: boolean;
+  input_type: string;
+  tooltip_text: string | null;
+  example: string | null;
+  formula_dependency: string | null;
+  output_impact: string | null;
+  sort_order: number | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
