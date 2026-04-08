@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+htmlcov/
+
+# Database
+*.db
+*.sqlite3
+
+# Build artifacts
+build/
+.tmp/
+temp/
+
+# Misc
+*.swp
